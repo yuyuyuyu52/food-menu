@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block title %}分类列表{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>分类列表</h1>
+            <a href="{{ url_for('categories.create') }}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> 新建分类
+            </a>
+        </div>
+
+        {% if categories %}
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+                {% for category in categories %}
+                    <div class="col">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ category.name }}</h5>
+                                <p class="card-text">包含 {{ category.dishes|length }} 个菜品</p>
+                            </div>
+                            <div class="card-footer bg-transparent">
+                                <div class="btn-group w-100" role="group">
+                                    <a href="{{ url_for('dishes.index', category_id=category.id) }}" class="btn btn-outline-primary">
+                                        <i class="fas fa-eye"></i> 查看菜品
+                                    </a>
+                                    <a href="{{ url_for('categories.edit', id=category.id) }}" class="btn btn-outline-secondary">
+                                        <i class="fas fa-edit"></i> 编辑
+                                    </a>
+                                    <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ category.id }}">
+                                        <i class="fas fa-trash"></i> 删除
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 删除确认模态框 -->
+                    <div class="modal fade" id="deleteModal{{ category.id }}" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">确认删除</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <p>确定要删除分类 "{{ category.name }}" 吗？此操作将同时删除该分类下的所有菜品，且不可恢复！</p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                                    <form action="{{ url_for('categories.delete', id=category.id) }}" method="post">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                        <button type="submit" class="btn btn-danger">确定删除</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="alert alert-info">
+                <p>暂无分类，请点击"新建分类"按钮创建。</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+
+{% block title %}订单确认{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="alert alert-success mb-4">
+            <h4 class="alert-heading"><i class="fas fa-check-circle"></i> 订单已确认!</h4>
+            <p>您的订单已经成功确认，以下是所需的配料和烹饪步骤。</p>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">合并后的配料清单</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if merged_ingredients %}
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>配料</th>
+                                            <th>数量</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for ingredient in merged_ingredients %}
+                                            <tr>
+                                                <td>{{ ingredient.name }}</td>
+                                                <td>{{ ingredient.amount }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <p class="text-muted">无配料信息</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-8">
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">烹饪步骤</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="accordion" id="recipeAccordion">
+                            {% for dish in dishes %}
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="heading{{ dish.id }}">
+                                        <button class="accordion-button {% if not loop.first %}collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ dish.id }}" aria-expanded="{{ 'true' if loop.first else 'false' }}" aria-controls="collapse{{ dish.id }}">
+                                            {{ dish.name }}
+                                        </button>
+                                    </h2>
+                                    <div id="collapse{{ dish.id }}" class="accordion-collapse collapse {% if loop.first %}show{% endif %}" aria-labelledby="heading{{ dish.id }}" data-bs-parent="#recipeAccordion">
+                                        <div class="accordion-body">
+                                            <div class="recipe-content">
+                                                {{ dish.recipe|nl2br|safe }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-4">
+            <a href="{{ url_for('orders.select') }}" class="btn btn-primary">
+                <i class="fas fa-utensils"></i> 继续点餐
+            </a>
+            <a href="{{ url_for('main.index') }}" class="btn btn-secondary">
+                <i class="fas fa-home"></i> 返回首页
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // nl2br过滤器，如果Jinja没有定义
+    function nl2br(str) {
+        return str.replace(/\n/g, '<br>');
+    }
+</script>
+{% endblock %}

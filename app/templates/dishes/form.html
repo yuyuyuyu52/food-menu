@@ -1,0 +1,221 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block styles %}
+<style>
+    .ingredients-container {
+        max-height: 300px;
+        overflow-y: auto;
+    }
+    .ingredient-item {
+        position: relative;
+        padding-right: 40px;
+    }
+    .remove-ingredient {
+        position: absolute;
+        right: 0;
+        top: 0;
+        height: 100%;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-10 mx-auto">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h2 class="card-title mb-0">{{ title }}</h2>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data" novalidate id="dishForm">
+                    {{ form.csrf_token }}
+                    {{ form.ingredients_data }}
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            {{ form.name.label(class="form-label") }}
+                            {{ form.name(class="form-control" + (" is-invalid" if form.name.errors else "")) }}
+                            {% if form.name.errors %}
+                                <div class="invalid-feedback">
+                                    {% for error in form.name.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form.category_id.label(class="form-label") }}
+                            {{ form.category_id(class="form-select" + (" is-invalid" if form.category_id.errors else "")) }}
+                            {% if form.category_id.errors %}
+                                <div class="invalid-feedback">
+                                    {% for error in form.category_id.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ form.image.label(class="form-label") }}
+                        {{ form.image(class="form-control" + (" is-invalid" if form.image.errors else "")) }}
+                        {% if form.image.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in form.image.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        {% if dish and dish.image_path %}
+                            <div class="mt-2">
+                                <p>当前图片:</p>
+                                <img src="{{ url_for('static', filename=dish.image_path) }}" alt="{{ dish.name }}" class="img-thumbnail" style="max-height: 150px;">
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">配料</label>
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span>配料列表</span>
+                                    <button type="button" class="btn btn-sm btn-primary" id="addIngredient">
+                                        <i class="fas fa-plus"></i> 添加配料
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-body ingredients-container">
+                                <div id="ingredientsList" class="row g-3">
+                                    <!-- 动态添加的配料将在这里 -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ form.recipe.label(class="form-label") }}
+                        {{ form.recipe(class="form-control" + (" is-invalid" if form.recipe.errors else ""), rows=6) }}
+                        {% if form.recipe.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in form.recipe.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('dishes.index') }}" class="btn btn-secondary">取消</a>
+                        {{ form.submit(class="btn btn-primary") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const ingredientsList = document.getElementById('ingredientsList');
+        const addIngredientBtn = document.getElementById('addIngredient');
+        const ingredientsData = document.getElementById('ingredients_data');
+        const dishForm = document.getElementById('dishForm');
+        
+        // 存储配料列表
+        let ingredients = [];
+        
+        // 如果已有配料数据，则加载它
+        if (ingredientsData.value) {
+            try {
+                ingredients = JSON.parse(ingredientsData.value);
+                renderIngredients();
+            } catch (e) {
+                console.error('解析配料数据时出错:', e);
+            }
+        }
+        
+        // 添加新配料
+        addIngredientBtn.addEventListener('click', function() {
+            ingredients.push({ name: '', amount: '' });
+            renderIngredients();
+        });
+        
+        // 在表单提交前保存配料数据
+        dishForm.addEventListener('submit', function(e) {
+            // 更新配料数据
+            updateIngredientsData();
+            
+            // 过滤掉空的配料
+            ingredients = ingredients.filter(ing => ing.name.trim() !== '' && ing.amount.trim() !== '');
+            ingredientsData.value = JSON.stringify(ingredients);
+        });
+        
+        // 渲染配料列表
+        function renderIngredients() {
+            ingredientsList.innerHTML = '';
+            
+            ingredients.forEach((ingredient, index) => {
+                const ingredientItem = document.createElement('div');
+                ingredientItem.className = 'col-12 ingredient-item mb-2';
+                ingredientItem.innerHTML = `
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <input type="text" class="form-control ingredient-name" placeholder="配料名称" value="${ingredient.name || ''}" data-index="${index}">
+                        </div>
+                        <div class="col-6">
+                            <div class="input-group">
+                                <input type="text" class="form-control ingredient-amount" placeholder="数量" value="${ingredient.amount || ''}" data-index="${index}">
+                                <button type="button" class="btn btn-outline-danger remove-ingredient" data-index="${index}">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                ingredientsList.appendChild(ingredientItem);
+            });
+            
+            // 为删除按钮添加事件监听器
+            document.querySelectorAll('.remove-ingredient').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const index = parseInt(this.getAttribute('data-index'));
+                    ingredients.splice(index, 1);
+                    renderIngredients();
+                });
+            });
+            
+            // 为输入框添加事件监听器
+            document.querySelectorAll('.ingredient-name, .ingredient-amount').forEach(input => {
+                input.addEventListener('input', function() {
+                    const index = parseInt(this.getAttribute('data-index'));
+                    const field = this.classList.contains('ingredient-name') ? 'name' : 'amount';
+                    ingredients[index][field] = this.value;
+                });
+            });
+        }
+        
+        // 更新配料数据
+        function updateIngredientsData() {
+            document.querySelectorAll('.ingredient-name').forEach(input => {
+                const index = parseInt(input.getAttribute('data-index'));
+                ingredients[index].name = input.value;
+            });
+            
+            document.querySelectorAll('.ingredient-amount').forEach(input => {
+                const index = parseInt(input.getAttribute('data-index'));
+                ingredients[index].amount = input.value;
+            });
+        }
+        
+        // 如果没有配料，添加一个空的
+        if (ingredients.length === 0) {
+            addIngredientBtn.click();
+        }
+    });
+</script>
+{% endblock %}

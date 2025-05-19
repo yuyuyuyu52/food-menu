@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block title %}确认订单{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>确认订单</h1>
+            <a href="{{ url_for('orders.select') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> 返回选择
+            </a>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">已选菜品</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>菜品名称</th>
+                                <th>分类</th>
+                                <th>配料数量</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for dish in dishes %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            {% if dish.image_path %}
+                                                <img src="{{ url_for('static', filename=dish.image_path) }}" alt="{{ dish.name }}" class="me-2" style="width: 50px; height: 50px; object-fit: cover;">
+                                            {% else %}
+                                                <div class="bg-light d-flex justify-content-center align-items-center me-2" style="width: 50px; height: 50px;">
+                                                    <i class="fas fa-utensils text-muted"></i>
+                                                </div>
+                                            {% endif %}
+                                            {{ dish.name }}
+                                        </div>
+                                    </td>
+                                    <td>{{ dish.category.name }}</td>
+                                    <td>{{ dish.ingredients|length }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <form action="{{ url_for('orders.confirm') }}" method="post">
+            {{ form.csrf_token }}
+            
+            {% for entry in form.dishes %}
+                {{ entry }}
+            {% endfor %}
+            
+            <div class="text-center">
+                <a href="{{ url_for('orders.select') }}" class="btn btn-secondary me-2">
+                    <i class="fas fa-edit"></i> 修改选择
+                </a>
+                {{ form.submit(class="btn btn-lg btn-success") }}
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

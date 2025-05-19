@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block title %}选择菜品{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>选择菜品</h1>
+            <a href="{{ url_for('main.index') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> 返回
+            </a>
+        </div>
+
+        {% if dishes %}
+            <form action="{{ url_for('orders.review') }}" method="post">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                
+                <div class="row row-cols-1 row-cols-md-3 g-4 mb-4">
+                    {% for dish in dishes %}
+                        <div class="col">
+                            <div class="card h-100">
+                                <div class="card-header">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="dish_ids" value="{{ dish.id }}" id="dish{{ dish.id }}">
+                                        <label class="form-check-label" for="dish{{ dish.id }}">
+                                            <strong>{{ dish.name }}</strong>
+                                        </label>
+                                    </div>
+                                </div>
+                                {% if dish.image_path %}
+                                    <img src="{{ url_for('static', filename=dish.image_path) }}" class="card-img-top" alt="{{ dish.name }}" style="height: 180px; object-fit: cover;">
+                                {% else %}
+                                    <div class="bg-light text-center py-4">
+                                        <i class="fas fa-utensils fa-3x text-muted"></i>
+                                    </div>
+                                {% endif %}
+                                <div class="card-body">
+                                    <p class="card-text">
+                                        <span class="badge bg-secondary">{{ dish.category.name }}</span>
+                                    </p>
+                                    <p class="card-text">
+                                        <small class="text-muted">配料: {{ dish.ingredients|length }} 种</small>
+                                    </p>
+                                </div>
+                                <div class="card-footer">
+                                    <a href="{{ url_for('dishes.view', id=dish.id) }}" class="btn btn-sm btn-outline-info" target="_blank">
+                                        <i class="fas fa-eye"></i> 查看详情
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                
+                <div class="text-center">
+                    <button type="submit" class="btn btn-lg btn-primary">
+                        <i class="fas fa-shopping-cart"></i> 继续下一步
+                    </button>
+                </div>
+            </form>
+        {% else %}
+            <div class="alert alert-info">
+                <p>暂无菜品可供选择。请先创建一些菜品。</p>
+                <a href="{{ url_for('dishes.create') }}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> 创建菜品
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
