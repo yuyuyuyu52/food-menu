@@ -81,7 +81,7 @@ class Order(db.Model):
     name = db.Column(db.String(100), nullable=True)  # 订单名称，可选
     merged_ingredients_json = db.Column(db.Text, nullable=False, default='[]')  # 合并的配料列表
     ingredients_status_json = db.Column(db.Text, nullable=False, default='[]')  # 配料完成状态
-    created_at = db.Column(db.DateTime, default=local_now)
+    created_at = db.Column(db.DateTime, nullable=False, default=local_now)
     
     # 多对多关系
     dishes = db.relationship('Dish', secondary='order_dishes', back_populates='orders')

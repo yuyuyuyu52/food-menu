@@ -9,7 +9,7 @@
         <p class="mb-2">您的订单已经成功确认并保存，以下是所需的配料和烹饪步骤。</p>
         <p>您可以随时在<a href="{{ url_for('orders.history') }}" class="text-green-800 underline hover:text-green-900">我的订单</a>中查看此订单。</p>
         {% if order %}
-            <p class="mt-3 font-medium">订单编号: #{{ order.id }} - {{ order.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+            <p class="mt-3 font-medium">订单编号: #{{ order.id }} - {% if order.created_at %}{{ order.created_at.strftime('%Y-%m-%d %H:%M:%S') }}{% else %}{{ g.now.strftime('%Y-%m-%d %H:%M:%S') }}{% endif %}</p>
         {% endif %}
     </div>
 

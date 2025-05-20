@@ -9,7 +9,7 @@ app = create_app()
 
 @app.before_request
 def before_request():
-    g.now = datetime.utcnow()
+    g.now = datetime.now()
 
 @app.cli.command("init-db")
 def init_db():
