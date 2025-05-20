@@ -3,97 +3,108 @@
 {% block title %}菜品列表{% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-12">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1>
-                {% if category %}
-                {{ category.name }} - 菜品列表
-                {% else %}
-                所有菜品
-                {% endif %}
-            </h1>
-            <div>
-                {% if category %}
-                <a href="{{ url_for('categories.index') }}" class="btn btn-secondary me-2">
-                    <i class="fas fa-arrow-left"></i> 返回分类
-                </a>
-                {% endif %}
-                <a href="{{ url_for('dishes.create') }}" class="btn btn-primary">
-                    <i class="fas fa-plus"></i> 新建菜品
-                </a>
-            </div>
+<div class="mui-paper mui-elevation-1 mui-padding mui-margin-bottom">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div class="mui-typography-h4">
+            {% if category %}
+            {{ category.name }} - 菜品列表
+            {% else %}
+            所有菜品
+            {% endif %}
         </div>
-
-        {% if dishes %}
-            <div class="row row-cols-1 row-cols-md-3 g-4">
-                {% for dish in dishes %}
-                    <div class="col">
-                        <div class="card h-100">
-                            {% if dish.image_path %}
-                                <img src="{{ url_for('static', filename=dish.image_path) }}" class="card-img-top" alt="{{ dish.name }}" style="height: 200px; object-fit: cover;">
-                            {% else %}
-                                <div class="bg-light text-center py-5">
-                                    <i class="fas fa-utensils fa-3x text-muted"></i>
-                                </div>
-                            {% endif %}
-                            <div class="card-body">
-                                <h5 class="card-title">{{ dish.name }}</h5>
-                                <p class="card-text">
-                                    <span class="badge bg-secondary">{{ dish.category.name }}</span>
-                                </p>
-                                <p class="card-text">
-                                    <small class="text-muted">配料: {{ dish.ingredients|length }} 种</small>
-                                </p>
-                            </div>
-                            <div class="card-footer bg-transparent">
-                                <div class="btn-group w-100" role="group">
-                                    <a href="{{ url_for('dishes.view', id=dish.id) }}" class="btn btn-outline-primary">
-                                        <i class="fas fa-eye"></i> 详情
-                                    </a>
-                                    <a href="{{ url_for('dishes.edit', id=dish.id) }}" class="btn btn-outline-secondary">
-                                        <i class="fas fa-edit"></i> 编辑
-                                    </a>
-                                    <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ dish.id }}">
-                                        <i class="fas fa-trash"></i> 删除
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 删除确认模态框 -->
-                    <div class="modal fade" id="deleteModal{{ dish.id }}" tabindex="-1" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title">确认删除</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <p>确定要删除菜品 "{{ dish.name }}" 吗？此操作不可恢复！</p>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
-                                    <form action="{{ url_for('dishes.delete', id=dish.id) }}" method="post">
-                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-                                        <button type="submit" class="btn btn-danger">确定删除</button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                {% endfor %}
-            </div>
-        {% else %}
-            <div class="alert alert-info">
-                {% if category %}
-                <p>该分类下暂无菜品，请点击"新建菜品"按钮创建。</p>
-                {% else %}
-                <p>暂无菜品，请点击"新建菜品"按钮创建。</p>
-                {% endif %}
-            </div>
-        {% endif %}
+        <div>
+            {% if category %}
+            <a href="{{ url_for('categories.index') }}" class="mui-button mui-button-contained" style="margin-right: 8px; background-color: #9e9e9e; color: white;">
+                <i class="material-icons" style="margin-right: 4px; font-size: 16px; vertical-align: text-bottom;">arrow_back</i> 返回分类
+            </a>
+            {% endif %}
+            <a href="{{ url_for('dishes.create') }}" class="mui-button mui-button-contained mui-button-primary">
+                <i class="material-icons" style="margin-right: 4px; font-size: 16px; vertical-align: text-bottom;">add</i> 新建菜品
+            </a>
+        </div>
     </div>
 </div>
+
+{% if dishes %}
+    <div class="mui-grid">
+        {% for dish in dishes %}
+            <div class="mui-grid-item mui-grid-xs-12 mui-grid-md-4 mui-margin-bottom">
+                <div class="mui-paper mui-elevation-1" style="height: 100%; display: flex; flex-direction: column;">
+                    {% if dish.image_path %}
+                        <div style="height: 200px; overflow: hidden;">
+                            <img src="{{ url_for('static', filename=dish.image_path) }}" alt="{{ dish.name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                        </div>
+                    {% else %}
+                        <div style="height: 200px; display: flex; justify-content: center; align-items: center; background-color: #f5f5f5;">
+                            <i class="material-icons" style="font-size: 48px; color: #9e9e9e;">restaurant</i>
+                        </div>
+                    {% endif %}
+                    <div style="padding: 16px; flex-grow: 1;">
+                        <div class="mui-typography-h5">{{ dish.name }}</div>
+                        <div style="margin: 8px 0;">
+                            <span class="mui-chip" style="background-color: #9e9e9e; color: white;">{{ dish.category.name }}</span>
+                        </div>
+                        <div class="mui-typography-body2" style="color: #757575;">
+                            配料: {{ dish.ingredients|length }} 种
+                        </div>
+                    </div>
+                    <div style="padding: 8px 16px 16px 16px;">
+                        <div style="display: flex; gap: 8px;">
+                            <a href="{{ url_for('dishes.view', id=dish.id) }}" class="mui-button mui-button-contained" style="flex: 1; background-color: #3f51b5; color: white;">
+                                <i class="material-icons" style="font-size: 16px; margin-right: 4px;">visibility</i> 详情
+                            </a>
+                            <a href="{{ url_for('dishes.edit', id=dish.id) }}" class="mui-button mui-button-contained" style="flex: 1; background-color: #ff9800; color: white;">
+                                <i class="material-icons" style="font-size: 16px; margin-right: 4px;">edit</i> 编辑
+                            </a>
+                            <button type="button" class="mui-button mui-button-contained" style="flex: 1; background-color: #f44336; color: white;" onclick="openDeleteDialog('{{ dish.id }}')">
+                                <i class="material-icons" style="font-size: 16px; margin-right: 4px;">delete</i> 删除
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MUI风格删除确认对话框 -->
+            <div id="deleteDialog{{ dish.id }}" class="mui-dialog-overlay" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.5); z-index: 2000; align-items: center; justify-content: center;">
+                <div class="mui-paper mui-elevation-24" style="width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; border-radius: 4px;">
+                    <div style="padding: 16px 24px; color: rgba(0, 0, 0, 0.87); background-color: #fff; border-bottom: 1px solid #e0e0e0;">
+                        <div class="mui-typography-h5">确认删除</div>
+                    </div>
+                    <div style="padding: 16px 24px; overflow-y: auto;">
+                        <p class="mui-typography-body1">确定要删除菜品 "{{ dish.name }}" 吗？此操作不可恢复！</p>
+                    </div>
+                    <div style="display: flex; justify-content: flex-end; padding: 8px; gap: 8px; border-top: 1px solid #e0e0e0;">
+                        <button type="button" class="mui-button" onclick="closeDeleteDialog('{{ dish.id }}')">取消</button>
+                        <form action="{{ url_for('dishes.delete', id=dish.id) }}" method="post" style="margin: 0;">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                            <button type="submit" class="mui-button mui-button-contained" style="background-color: #f44336; color: white;">确定删除</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="mui-alert mui-alert-info mui-paper mui-elevation-1">
+        {% if category %}
+        <div class="mui-alert-message">该分类下暂无菜品，请点击"新建菜品"按钮创建。</div>
+        {% else %}
+        <div class="mui-alert-message">暂无菜品，请点击"新建菜品"按钮创建。</div>
+        {% endif %}
+    </div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function openDeleteDialog(id) {
+        document.getElementById('deleteDialog' + id).style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+    
+    function closeDeleteDialog(id) {
+        document.getElementById('deleteDialog' + id).style.display = 'none';
+        document.body.style.overflow = '';
+    }
+</script>
 {% endblock %}

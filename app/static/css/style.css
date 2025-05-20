@@ -1,174 +1,530 @@
-/* 全局样式 */
+/* 自定义全局样式，兼容Tailwind CSS */
+
+/* 确保页面最小高度充满整个视口 */
 html, body {
     height: 100%;
 }
 
+/* 为底部导航栏预留空间 */
 body {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-    /* 为底部导航栏留出空间 */
     padding-bottom: 70px;
 }
 
-.content {
-    flex: 1 0 auto;
+/* 用于自定义滚动行为的样式 */
+.smooth-scroll {
+    scroll-behavior: smooth;
 }
 
-.footer {
-    flex-shrink: 0;
-    /* 确保页脚在底部导航栏之上 */
-    margin-bottom: 56px;
+/* 表单样式增强 */
+.form-input:focus, 
+.form-textarea:focus, 
+.form-select:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
 }
 
-/* 卡片样式 */
-.card {
-    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+/* 自定义动画 */
+.transition-all {
+    transition-property: all;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms;
 }
 
-.card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+.hover-raise:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
-/* 图片样式 */
-.card-img-top {
-    object-fit: cover;
-    height: 200px;
-}
-
-/* 按钮样式 */
-.btn {
-    border-radius: 0.25rem;
-}
-
-/* 表单样式 */
-.form-control:focus, .form-select:focus {
-    border-color: #80bdff;
-    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
-}
-
-/* 配料列表样式 */
-.ingredient-item {
-    transition: background-color 0.2s ease;
-}
-
-.ingredient-item:hover {
-    background-color: rgba(0, 0, 0, 0.03);
-}
-
-/* 横向分类导航 */
-.category-scroll-container {
-    position: sticky;
-    top: 56px;
-    z-index: 100;
-    background-color: #fff;
-    padding: 10px 0;
-    border-bottom: 1px solid #eee;
-}
-
-.category-item .btn {
-    white-space: nowrap;
-    border-radius: 20px;
-    padding: 8px 20px;
-    transition: all 0.2s ease;
-}
-
-.category-item .btn-primary {
-    transform: scale(1.05);
-}
-
-/* 底部固定区域 */
-.fixed-bottom-bar {
-    position: fixed;
-    bottom: 56px;
-    left: 0;
-    right: 0;
-    padding: 0 15px;
-    z-index: 999;
-}
-
-/* 点菜页面底部订单栏 */
-.order-bottom-bar {
-    position: fixed;
-    bottom: 56px; /* 与底部导航栏紧贴 */
-    left: 0;
-    right: 0;
-    z-index: 1020;
-    background-color: white;
-}
-
-/* 为底部导航栏预留空间 */
-.container {
-    padding-bottom: 110px; /* 为底部导航栏+订单栏预留空间 */
-}
-
-/* 点菜页面底部提交按钮区域 */
-.fixed-bottom-bar .btn-lg {
-    border-radius: 30px;
-    padding: 10px 25px;
-}
-
-/* 响应式调整 */
-@media (max-width: 768px) {
-    .card-title {
-        font-size: 1.1rem;
-    }
-}
-
-/* 页面标题动画 */
-h1 {
+/* 自定义下拉菜单样式 */
+.dropdown {
     position: relative;
     display: inline-block;
 }
 
-h1::after {
-    content: '';
+.dropdown-content {
+    display: none;
     position: absolute;
-    width: 100%;
-    transform: scaleX(0);
-    height: 2px;
-    bottom: 0;
-    left: 0;
-    background-color: #0d6efd;
-    transform-origin: bottom right;
-    transition: transform 0.3s ease-out;
+    background-color: white;
+    min-width: 160px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    z-index: 1;
+    border-radius: 0.375rem;
+    overflow: hidden;
 }
 
-h1:hover::after {
-    transform: scaleX(1);
-    transform-origin: bottom left;
+.dropdown:hover .dropdown-content {
+    display: block;
 }
 
-/* 底部导航栏样式 */
-.navbar.fixed-bottom {
-    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
-    padding: 0;
+/* 文本截断 */
+.truncate-2-lines {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
-.navbar.fixed-bottom .nav-link {
-    padding: 0.75rem 0.5rem;
-    color: rgba(255, 255, 255, 0.75);
+/* 自定义标签样式 - 替换@apply指令 */
+.checkbox-custom {
+    height: 1.25rem;
+    width: 1.25rem;
+    border-radius: 0.25rem;
+    border-color: #D1D5DB;
+    color: #2563EB;
+}
+.checkbox-custom:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px #93C5FD;
 }
 
-.navbar.fixed-bottom .nav-link.active {
+/* 自定义标签样式 */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.125rem 0.625rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.badge-blue {
+    background-color: #DBEAFE;
+    color: #1E40AF;
+}
+
+.badge-green {
+    background-color: #D1FAE5;
+    color: #065F46;
+}
+
+.badge-yellow {
+    background-color: #FEF3C7;
+    color: #92400E;
+}
+
+.badge-red {
+    background-color: #FEE2E2;
+    color: #B91C1C;
+}
+
+/* 自定义卡片样式 */
+.card {
+    background-color: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    overflow: hidden;
+}
+
+.card-hover {
+    transition-property: all;
+    transition-duration: 300ms;
+}
+.card-hover:hover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    transform: translateY(-0.25rem);
+}
+
+/* 自定义按钮样式 */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    border: 1px solid transparent;
+    font-size: 0.875rem;
+    font-weight: 500;
+    border-radius: 0.375rem;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+.btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+}
+
+.btn-blue {
+    color: white;
+    background-color: #2563EB;
+}
+.btn-blue:hover {
+    background-color: #1D4ED8;
+}
+.btn-blue:focus {
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.5);
+}
+
+.btn-red {
+    color: white;
+    background-color: #DC2626;
+}
+.btn-red:hover {
+    background-color: #B91C1C;
+}
+.btn-red:focus {
+    box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.5);
+}
+
+.btn-green {
+    color: white;
+    background-color: #059669;
+}
+.btn-green:hover {
+    background-color: #047857;
+}
+.btn-green:focus {
+    box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.5);
+}
+
+.btn-gray {
+    color: #374151;
+    background-color: #F3F4F6;
+}
+.btn-gray:hover {
+    background-color: #E5E7EB;
+}
+.btn-gray:focus {
+    box-shadow: 0 0 0 2px rgba(107, 114, 128, 0.5);
+}
+
+.mui-padding {
+    padding: 16px;
+}
+
+.mui-margin-bottom {
+    margin-bottom: 16px;
+}
+
+.mui-margin-bottom-4 {
+    margin-bottom: 32px;
+}
+
+.mui-margin-top {
+    margin-top: 16px;
+}
+
+.mui-border-bottom {
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.mui-padding-bottom-1 {
+    padding-bottom: 8px;
+}
+
+/* MUI 按钮样式 */
+.mui-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    box-sizing: border-box;
+    background-color: transparent;
+    outline: 0;
+    margin: 0;
+    cursor: pointer;
+    user-select: none;
+    vertical-align: middle;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.875rem;
+    line-height: 1.75;
+    letter-spacing: 0.02857em;
+    text-transform: uppercase;
+    min-width: 64px;
+    padding: 6px 16px;
+    border-radius: 4px;
+    transition: background-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms, box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+}
+
+.mui-button-contained {
+    box-shadow: 0px 3px 1px -2px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.14), 0px 1px 5px 0px rgba(0,0,0,0.12);
+    padding: 6px 16px;
+    color: rgba(0, 0, 0, 0.87);
+    background-color: #e0e0e0;
+    border: none;
+}
+
+.mui-button-contained:hover {
+    background-color: #d5d5d5;
+    box-shadow: 0px 2px 4px -1px rgba(0,0,0,0.2), 0px 4px 5px 0px rgba(0,0,0,0.14), 0px 1px 10px 0px rgba(0,0,0,0.12);
+}
+
+.mui-button-primary {
+    background-color: #3f51b5;
     color: #fff;
+}
+
+.mui-button-primary:hover {
+    background-color: #303f9f;
+}
+
+/* MUI 列表样式 */
+.mui-list {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.mui-list-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 16px;
     position: relative;
 }
 
-.navbar.fixed-bottom .nav-link.active::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 40%;
-    height: 3px;
-    background-color: #fff;
-    border-radius: 3px 3px 0 0;
+.mui-list-item-button {
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+    transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
 }
 
-.navbar.fixed-bottom .fas {
-    font-size: 1.2rem;
+.mui-list-item-button:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+    text-decoration: none;
+}
+
+.mui-list-item-content {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.mui-list-item-text {
+    color: rgba(0, 0, 0, 0.87);
+}
+
+/* MUI 底部导航样式 */
+.mui-bottom-navigation {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    background-color: #3f51b5;
+    height: 56px;
+    z-index: 1100;
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.mui-bottom-navigation-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: none;
+    padding: 8px 12px;
+    min-width: 80px;
+    transition: all 0.2s ease;
+}
+
+.mui-bottom-navigation-item-active {
+    color: white;
+}
+
+.mui-bottom-navigation-item i {
+    font-size: 24px;
+    margin-bottom: 2px;
+}
+
+.mui-bottom-navigation-item span {
+    font-size: 12px;
+    line-height: 1;
+    font-weight: 400;
+}
+
+.mui-bottom-navigation-item:hover {
+    color: white;
+    background-color: rgba(255, 255, 255, 0.08);
+    text-decoration: none;
+}
+
+/* MUI 底部订单栏和提交按钮 */
+.mui-bottom-sheet {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1050;
+}
+
+/* MUI 应用栏 */
+.mui-app-bar {
+    background-color: #3f51b5;
+    color: white;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    padding: 0 24px;
+    box-shadow: 0 2px 4px -1px rgba(0,0,0,0.2), 0 4px 5px 0px rgba(0,0,0,0.14), 0 1px 10px 0px rgba(0,0,0,0.12);
+    z-index: 1100;
+    position: sticky;
+    top: 0;
+}
+
+.mui-app-title {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 500;
+}
+
+/* MUI 网格布局 */
+.mui-grid {
+    display: flex;
+    flex-wrap: wrap;
+    box-sizing: border-box;
+    margin-right: -16px;
+    margin-left: -16px;
+}
+
+.mui-grid-item {
+    padding-left: 16px;
+    padding-right: 16px;
+    flex-basis: 0;
+    flex-grow: 1;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.mui-grid-xs-12 {
+    flex: 0 0 100%;
+    max-width: 100%;
+}
+
+@media (min-width: 960px) {
+    .mui-grid-md-3 {
+        flex: 0 0 25%;
+        max-width: 25%;
+    }
+    
+    .mui-grid-md-9 {
+        flex: 0 0 75%;
+        max-width: 75%;
+    }
+}
+
+@media (min-width: 1280px) {
+    .mui-grid-lg-2 {
+        flex: 0 0 16.666667%;
+        max-width: 16.666667%;
+    }
+    
+    .mui-grid-lg-10 {
+        flex: 0 0 83.333333%;
+        max-width: 83.333333%;
+    }
+}
+
+/* MUI 提示组件 */
+.mui-alert {
+    padding: 16px;
+    margin-bottom: 16px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+}
+
+.mui-alert-info {
+    background-color: #e3f2fd;
+    color: #0d47a1;
+}
+
+.mui-alert-success {
+    background-color: #e8f5e9;
+    color: #1b5e20;
+}
+
+.mui-alert-warning {
+    background-color: #fff3e0;
+    color: #e65100;
+}
+
+.mui-alert-error {
+    background-color: #ffebee;
+    color: #b71c1c;
+}
+
+.mui-alert-message {
+    flex-grow: 1;
+}
+
+.mui-alert-close {
+    margin-left: 8px;
+    padding: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: inherit;
+}
+
+/* MUI 分隔线 */
+.mui-divider {
+    height: 1px;
+    margin: 0;
+    border: none;
+    background-color: #e0e0e0;
+}
+
+/* MUI 固定位置 */
+.mui-sticky {
+    position: sticky;
+    top: 20px;
+}
+
+/* MUI 标签样式 */
+.mui-chip {
+    display: inline-flex;
+    align-items: center;
+    height: 32px;
+    border-radius: 16px;
+    white-space: nowrap;
+    padding: 0 12px;
+    background-color: #e0e0e0;
+    font-size: 0.8125rem;
+}
+
+.mui-chip-small {
+    height: 24px;
+    font-size: 0.75rem;
+}
+
+.mui-chip-primary {
+    background-color: #3f51b5;
+    color: white;
+}
+
+/* MUI 排版 */
+.mui-typography-h4 {
+    font-size: 2.125rem;
+    font-weight: 400;
+    line-height: 1.235;
+    letter-spacing: 0.00735em;
+    margin-bottom: 0.5rem;
+}
+
+.mui-typography-h5 {
+    font-size: 1.5rem;
+    font-weight: 400;
+    line-height: 1.334;
+    letter-spacing: 0em;
+    margin-bottom: 0.5rem;
+}
+
+.mui-typography-subtitle1 {
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.75;
+    letter-spacing: 0.00938em;
+}
+
+.mui-typography-body1 {
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    letter-spacing: 0.00938em;
+}
+
+.mui-typography-body2 {
+    font-size: 0.875rem;
+    font-weight: 400;
+    line-height: 1.43;
+    letter-spacing: 0.01071em;
 }

@@ -16,7 +16,7 @@ def create_app(config=None):
     # 配置
     app.config.from_mapping(
         SECRET_KEY=os.environ.get('SECRET_KEY', 'dev_key_please_change'),
-        SQLALCHEMY_DATABASE_URI=os.environ.get('DATABASE_URL', 'sqlite:////home/will/food-menu/food_menu.db'),
+        SQLALCHEMY_DATABASE_URI=os.environ.get('DATABASE_URL', 'sqlite:///instance/food_menu.db'),
         SQLALCHEMY_TRACK_MODIFICATIONS=False,
         UPLOAD_FOLDER=os.path.join(app.static_folder, 'uploads'),
         MAX_CONTENT_LENGTH=16 * 1024 * 1024  # 最大16MB上传
@@ -52,7 +52,9 @@ def create_app(config=None):
     def before_request():
         from flask import g
         from datetime import datetime
-        g.now = datetime.utcnow()
+        
+        # 使用本地时间
+        g.now = datetime.now()
     
     # 注册错误处理函数
     register_error_handlers(app)

@@ -3,81 +3,85 @@
 {% block title %}确认订单{% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-12">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1>确认订单</h1>
-            <a href="{{ url_for('orders.select') }}" class="btn btn-secondary">
-                <i class="fas fa-arrow-left"></i> 返回选择
-            </a>
-        </div>
-
-        <div class="card mb-4">
-            <div class="card-header bg-primary text-white">
-                <h5 class="mb-0">已选菜品</h5>
-            </div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-hover">
-                        <thead>
-                            <tr>
-                                <th>菜品名称</th>
-                                <th>分类</th>
-                                <th>配料数量</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for dish in dishes %}
-                                <tr>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            {% if dish.image_path %}
-                                                <img src="{{ url_for('static', filename=dish.image_path) }}" alt="{{ dish.name }}" class="me-2" style="width: 50px; height: 50px; object-fit: cover;">
-                                            {% else %}
-                                                <div class="bg-light d-flex justify-content-center align-items-center me-2" style="width: 50px; height: 50px;">
-                                                    <i class="fas fa-utensils text-muted"></i>
-                                                </div>
-                                            {% endif %}
-                                            {{ dish.name }}
-                                        </div>
-                                    </td>
-                                    <td>{{ dish.category.name }}</td>
-                                    <td>{{ dish.ingredients|length }}</td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <form action="{{ url_for('orders.confirm') }}" method="post">
-            {{ form.csrf_token }}
-            
-            {% for entry in form.dishes %}
-                {{ entry }}
-            {% endfor %}
-            
-            <div class="card mb-4">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0">订单信息</h5>
-                </div>
-                <div class="card-body">
-                    <div class="mb-3">
-                        <label for="name" class="form-label">订单名称 (可选)</label>
-                        {{ form.name(class="form-control", placeholder="例如: 家庭聚餐, 周末派对...") }}
-                        <div class="form-text">给您的订单起个名字，方便以后查找</div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="text-center">
-                <a href="{{ url_for('orders.select') }}" class="btn btn-secondary me-2">
-                    <i class="fas fa-edit"></i> 修改选择
-                </a>
-                {{ form.submit(class="btn btn-lg btn-success") }}
-            </div>
-        </form>
+<div class="w-full">
+    <div class="flex flex-col md:flex-row justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold text-gray-800 mb-4 md:mb-0">确认订单</h1>
+        <a href="{{ url_for('orders.select') }}" class="bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded-md shadow-sm flex items-center">
+            <i class="fas fa-arrow-left mr-2"></i> 返回选择
+        </a>
     </div>
+
+    <div class="bg-white rounded-lg shadow-md overflow-hidden mb-6">
+        <div class="bg-blue-600 text-white p-3">
+            <h5 class="font-medium">已选菜品</h5>
+        </div>
+        <div class="p-4">
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">菜品名称</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">分类</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">配料数量</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        {% for dish in dishes %}
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        {% if dish.image_path %}
+                                            <img src="{{ url_for('static', filename=dish.image_path) }}" alt="{{ dish.name }}" class="w-12 h-12 object-cover rounded mr-3">
+                                        {% else %}
+                                            <div class="w-12 h-12 flex items-center justify-center bg-gray-100 rounded mr-3">
+                                                <i class="fas fa-utensils text-gray-400"></i>
+                                            </div>
+                                        {% endif %}
+                                        <span class="text-sm font-medium text-gray-900">{{ dish.name }}</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    <span class="inline-block px-2 py-1 text-xs bg-gray-200 text-gray-800 rounded-full">
+                                        {{ dish.category.name }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    {{ dish.ingredients|length }}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <form action="{{ url_for('orders.confirm') }}" method="post">
+        {{ form.csrf_token }}
+        
+        {% for entry in form.dishes %}
+            {{ entry }}
+        {% endfor %}
+        
+        <div class="bg-white rounded-lg shadow-md overflow-hidden mb-6">
+            <div class="bg-blue-600 text-white p-3">
+                <h5 class="font-medium">订单信息</h5>
+            </div>
+            <div class="p-4">
+                <div class="mb-4">
+                    <label for="name" class="block text-sm font-medium text-gray-700 mb-1">订单名称 (可选)</label>
+                    {{ form.name(class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50", placeholder="例如: 家庭聚餐, 周末派对...") }}
+                    <p class="mt-1 text-sm text-gray-500">给您的订单起个名字，方便以后查找</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="text-center mb-10">
+            <a href="{{ url_for('orders.select') }}" class="inline-block bg-gray-500 hover:bg-gray-600 text-white py-2 px-6 rounded-md shadow-sm mx-2">
+                <i class="fas fa-edit mr-2"></i> 修改选择
+            </a>
+            {{ form.submit(class="inline-block bg-green-600 hover:bg-green-700 text-white py-2 px-6 rounded-md shadow-sm text-lg mx-2") }}
+        </div>
+    </form>
 </div>
 {% endblock %}

@@ -1,0 +1,15 @@
+[Unit]
+Description=Food Menu Flask Application
+After=network.target
+
+[Service]
+User=www-data
+Group=www-data
+WorkingDirectory=/path/to/food-menu
+Environment="PATH=/path/to/food-menu/venv/bin"
+ExecStart=/path/to/food-menu/venv/bin/python app.py
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

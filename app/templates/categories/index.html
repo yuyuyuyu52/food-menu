@@ -3,68 +3,79 @@
 {% block title %}分类列表{% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-12">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1>分类列表</h1>
-            <a href="{{ url_for('categories.create') }}" class="btn btn-primary">
-                <i class="fas fa-plus"></i> 新建分类
-            </a>
-        </div>
-
-        {% if categories %}
-            <div class="row row-cols-1 row-cols-md-3 g-4">
-                {% for category in categories %}
-                    <div class="col">
-                        <div class="card h-100">
-                            <div class="card-body">
-                                <h5 class="card-title">{{ category.name }}</h5>
-                                <p class="card-text">包含 {{ category.dishes|length }} 个菜品</p>
-                            </div>
-                            <div class="card-footer bg-transparent">
-                                <div class="btn-group w-100" role="group">
-                                    <a href="{{ url_for('dishes.index', category_id=category.id) }}" class="btn btn-outline-primary">
-                                        <i class="fas fa-eye"></i> 查看菜品
-                                    </a>
-                                    <a href="{{ url_for('categories.edit', id=category.id) }}" class="btn btn-outline-secondary">
-                                        <i class="fas fa-edit"></i> 编辑
-                                    </a>
-                                    <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ category.id }}">
-                                        <i class="fas fa-trash"></i> 删除
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 删除确认模态框 -->
-                    <div class="modal fade" id="deleteModal{{ category.id }}" tabindex="-1" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title">确认删除</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <p>确定要删除分类 "{{ category.name }}" 吗？此操作将同时删除该分类下的所有菜品，且不可恢复！</p>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
-                                    <form action="{{ url_for('categories.delete', id=category.id) }}" method="post">
-                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-                                        <button type="submit" class="btn btn-danger">确定删除</button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                {% endfor %}
-            </div>
-        {% else %}
-            <div class="alert alert-info">
-                <p>暂无分类，请点击"新建分类"按钮创建。</p>
-            </div>
-        {% endif %}
+<div class="mui-paper mui-elevation-1 mui-padding mui-margin-bottom">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div class="mui-typography-h4">分类列表</div>
+        <a href="{{ url_for('categories.create') }}" class="mui-button mui-button-contained mui-button-primary">
+            <i class="material-icons" style="margin-right: 4px; font-size: 16px; vertical-align: text-bottom;">add</i> 新建分类
+        </a>
     </div>
 </div>
+
+{% if categories %}
+    <div class="mui-grid">
+        {% for category in categories %}
+            <div class="mui-grid-item mui-grid-xs-12 mui-grid-md-4 mui-margin-bottom">
+                <div class="mui-paper mui-elevation-1" style="height: 100%; display: flex; flex-direction: column;">
+                    <div style="padding: 16px; flex-grow: 1;">
+                        <div class="mui-typography-h5">{{ category.name }}</div>
+                        <div class="mui-typography-body1" style="color: #757575; margin-top: 8px;">
+                            包含 <span class="mui-chip" style="background-color: #e0e0e0; color: #424242;">{{ category.dishes|length }}</span> 个菜品
+                        </div>
+                    </div>
+                    <div style="padding: 8px 16px 16px 16px;">
+                        <div style="display: flex; gap: 8px;">
+                            <a href="{{ url_for('dishes.index', category_id=category.id) }}" class="mui-button mui-button-contained" style="flex: 1; background-color: #3f51b5; color: white;">
+                                <i class="material-icons" style="font-size: 16px; margin-right: 4px;">restaurant_menu</i> 查看菜品
+                            </a>
+                            <a href="{{ url_for('categories.edit', id=category.id) }}" class="mui-button mui-button-contained" style="flex: 1; background-color: #ff9800; color: white;">
+                                <i class="material-icons" style="font-size: 16px; margin-right: 4px;">edit</i> 编辑
+                            </a>
+                            <button type="button" class="mui-button mui-button-contained" style="flex: 1; background-color: #f44336; color: white;" onclick="openDeleteDialog('{{ category.id }}')">
+                                <i class="material-icons" style="font-size: 16px; margin-right: 4px;">delete</i> 删除
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MUI风格删除确认对话框 -->
+            <div id="deleteDialog{{ category.id }}" class="mui-dialog-overlay" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.5); z-index: 2000; align-items: center; justify-content: center;">
+                <div class="mui-paper mui-elevation-24" style="width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; border-radius: 4px;">
+                    <div style="padding: 16px 24px; color: rgba(0, 0, 0, 0.87); background-color: #fff; border-bottom: 1px solid #e0e0e0;">
+                        <div class="mui-typography-h5">确认删除</div>
+                    </div>
+                    <div style="padding: 16px 24px; overflow-y: auto;">
+                        <p class="mui-typography-body1">确定要删除分类 "{{ category.name }}" 吗？此操作将同时删除该分类下的所有菜品，且不可恢复！</p>
+                    </div>
+                    <div style="display: flex; justify-content: flex-end; padding: 8px; gap: 8px; border-top: 1px solid #e0e0e0;">
+                        <button type="button" class="mui-button" onclick="closeDeleteDialog('{{ category.id }}')">取消</button>
+                        <form action="{{ url_for('categories.delete', id=category.id) }}" method="post" style="margin: 0;">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                            <button type="submit" class="mui-button mui-button-contained" style="background-color: #f44336; color: white;">确定删除</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="mui-alert mui-alert-info mui-paper mui-elevation-1">
+        <div class="mui-alert-message">暂无分类，请点击"新建分类"按钮创建。</div>
+    </div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function openDeleteDialog(id) {
+        document.getElementById('deleteDialog' + id).style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+    
+    function closeDeleteDialog(id) {
+        document.getElementById('deleteDialog' + id).style.display = 'none';
+        document.body.style.overflow = '';
+    }
+</script>
 {% endblock %}

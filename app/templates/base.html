@@ -4,24 +4,75 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}食品菜单应用{% endblock %}</title>
-    <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        plugins: [
+          function({ addVariant, addComponents, addBase, theme }) {
+            // 添加表单控件样式
+            addComponents({
+              '.form-checkbox': {
+                'appearance': 'none',
+                'padding': '0',
+                'display': 'inline-block',
+                'verticalAlign': 'middle',
+                'backgroundColor': '#fff',
+                'borderWidth': '1px',
+                'borderRadius': '0.25rem',
+                'borderColor': '#d1d5db',
+                'userSelect': 'none',
+                'height': '1.25rem',
+                'width': '1.25rem',
+                'color': '#3b82f6',
+                'cursor': 'pointer',
+                'backgroundOrigin': 'border-box',
+                'backgroundRepeat': 'no-repeat',
+                'backgroundPosition': 'center',
+                'backgroundSize': '100% 100%',
+                '&:checked': {
+                  'borderColor': 'transparent',
+                  'backgroundColor': 'currentColor',
+                  'backgroundImage': `url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3e%3c/svg%3e")`,
+                }
+              }
+            });
+          }
+        ]
+      }
+    </script>
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
     <!-- 自定义CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     {% block styles %}{% endblock %}
 </head>
-<body>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+    <!-- 顶部应用栏 -->
+    <header class="bg-blue-600 text-white shadow-md">
+        <div class="container mx-auto px-4 py-3">
+            <h1 class="text-xl font-bold">食品菜单</h1>
+        </div>
+    </header>
+    
     <!-- 主要内容 -->
-    <div class="container mb-4">
+    <main class="flex-grow container mx-auto px-4 py-6 mb-20">
         <!-- 闪现消息 -->
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
-                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-                        {{ message }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    {% set alert_color = {
+                        'success': 'bg-green-100 border-green-500 text-green-700',
+                        'info': 'bg-blue-100 border-blue-500 text-blue-700',
+                        'warning': 'bg-yellow-100 border-yellow-500 text-yellow-700',
+                        'danger': 'bg-red-100 border-red-500 text-red-700',
+                        'error': 'bg-red-100 border-red-500 text-red-700'
+                    } %}
+                    <div class="mb-4 p-4 rounded border-l-4 {{ alert_color.get(category, 'bg-blue-100 border-blue-500 text-blue-700') }} flex justify-between items-center">
+                        <span>{{ message }}</span>
+                        <button class="text-gray-500 hover:text-gray-800" onclick="this.parentElement.remove()">
+                            <i class="fas fa-times"></i>
+                        </button>
                     </div>
                 {% endfor %}
             {% endif %}
@@ -29,49 +80,37 @@
 
         <!-- 页面内容 -->
         {% block content %}{% endblock %}
-    </div>
+    </main>
 
     <!-- 页脚 -->
-    <footer class="footer bg-light py-3 mt-auto">
-        <div class="container text-center">
-            <span class="text-muted">© {{ g.now.year }} 食品菜单应用</span>
+    <footer class="bg-gray-200 py-3 text-center text-gray-600 mt-auto">
+        <div class="container mx-auto">
+            <span>© {{ g.now.year }} 食品菜单应用</span>
         </div>
     </footer>
     
     <!-- 底部导航栏 -->
-    <nav class="navbar fixed-bottom navbar-dark bg-dark">
-        <div class="container-fluid">
-            <ul class="navbar-nav w-100 nav-justified flex-row">
-                <li class="nav-item">
-                    <a class="nav-link text-center {% if request.endpoint and request.endpoint.startswith('categories') %}active{% endif %}" href="{{ url_for('categories.index') }}">
-                        <i class="fas fa-list d-block mb-1"></i>
-                        <small>分类</small>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link text-center {% if request.endpoint and request.endpoint.startswith('dishes') %}active{% endif %}" href="{{ url_for('dishes.index') }}">
-                        <i class="fas fa-utensils d-block mb-1"></i>
-                        <small>菜品</small>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link text-center {% if request.endpoint and request.endpoint.startswith('orders.select') %}active{% endif %}" href="{{ url_for('orders.select') }}">
-                        <i class="fas fa-shopping-cart d-block mb-1"></i>
-                        <small>点菜</small>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link text-center {% if request.endpoint and request.endpoint == 'orders.history' %}active{% endif %}" href="{{ url_for('orders.history') }}">
-                        <i class="fas fa-clipboard-list d-block mb-1"></i>
-                        <small>订单</small>
-                    </a>
-                </li>
-            </ul>
+    <nav class="fixed bottom-0 left-0 right-0 bg-blue-600 text-white shadow-lg">
+        <div class="flex justify-around">
+            <a href="{{ url_for('categories.index') }}" class="flex flex-col items-center py-2 px-3 {% if request.endpoint and request.endpoint.startswith('categories') %}bg-blue-700{% endif %} hover:bg-blue-700">
+                <i class="fas fa-th-list text-xl"></i>
+                <span class="text-xs mt-1">分类</span>
+            </a>
+            <a href="{{ url_for('dishes.index') }}" class="flex flex-col items-center py-2 px-3 {% if request.endpoint and request.endpoint.startswith('dishes') %}bg-blue-700{% endif %} hover:bg-blue-700">
+                <i class="fas fa-utensils text-xl"></i>
+                <span class="text-xs mt-1">菜品</span>
+            </a>
+            <a href="{{ url_for('orders.select') }}" class="flex flex-col items-center py-2 px-3 {% if request.endpoint and request.endpoint == 'orders.select' %}bg-blue-700{% endif %} hover:bg-blue-700">
+                <i class="fas fa-shopping-cart text-xl"></i>
+                <span class="text-xs mt-1">点菜</span>
+            </a>
+            <a href="{{ url_for('orders.history') }}" class="flex flex-col items-center py-2 px-3 {% if request.endpoint and request.endpoint == 'orders.history' %}bg-blue-700{% endif %} hover:bg-blue-700">
+                <i class="fas fa-receipt text-xl"></i>
+                <span class="text-xs mt-1">订单</span>
+            </a>
         </div>
     </nav>
 
-    <!-- Bootstrap 5 JS Bundle with Popper -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- 自定义JS -->

@@ -3,66 +3,76 @@
 {% block title %}点菜菜单 - 首页{% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-12">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h1>点菜菜单</h1>
-        </div>
-    </div>
+<div class="bg-white rounded-lg shadow-md p-4 mb-6">
+    <h1 class="text-2xl font-bold text-gray-800">点菜菜单</h1>
 </div>
 
 {% if dishes %}
     <form action="{{ url_for('orders.review') }}" method="post">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
         
-        <div class="row">
-            <!-- 左侧导航栏 -->
-            <div class="col-md-3 col-lg-2">
-                <div class="list-group sticky-top" style="top: 20px;">
-                    <div class="list-group-item list-group-item-primary">菜品分类</div>
-                    {% for category in categories %}
-                        <a href="#category-{{ category.id }}" class="list-group-item list-group-item-action">{{ category.name }}</a>
-                    {% endfor %}
+        <div class="flex flex-col md:flex-row gap-6">
+            <!-- 左侧分类导航 -->
+            <div class="w-full md:w-1/4 lg:w-1/5">
+                <div class="bg-white rounded-lg shadow-md sticky top-4">
+                    <div class="bg-blue-600 text-white p-3 rounded-t-lg font-medium">
+                        菜品分类
+                    </div>
+                    <ul class="p-2">
+                        {% for category in categories %}
+                            <li class="my-1">
+                                <a href="#category-{{ category.id }}" class="block p-2 hover:bg-gray-100 rounded transition duration-150 text-blue-600 hover:text-blue-800">
+                                    {{ category.name }}
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>
                 </div>
             </div>
             
-            <!-- 右侧菜品展示 -->
-            <div class="col-md-9 col-lg-10">
-                <!-- 按分类显示菜品 -->
+            <!-- 右侧菜品列表 -->
+            <div class="w-full md:w-3/4 lg:w-4/5">
                 {% for category in categories %}
-                    <div id="category-{{ category.id }}" class="mb-4">
-                        <h3 class="border-bottom pb-2">{{ category.name }}</h3>
+                    <div id="category-{{ category.id }}" class="mb-8">
+                        <h2 class="text-xl font-semibold text-gray-800 border-b pb-2 mb-4">{{ category.name }}</h2>
                         
-                        <div class="list-group">
+                        <div class="bg-white rounded-lg shadow-md overflow-hidden">
                             {% for dish in dishes if dish.category_id == category.id %}
-                                <div class="list-group-item list-group-item-action d-flex align-items-center py-3">
-                                    <!-- 左侧图片 -->
-                                    <div class="me-3" style="width: 80px; height: 80px; overflow: hidden; flex-shrink: 0;">
+                                <div class="p-4 border-b last:border-b-0 flex items-center">
+                                    <!-- 菜品图片 -->
+                                    <div class="w-20 h-20 flex-shrink-0 rounded overflow-hidden mr-4 bg-gray-100">
                                         {% if dish.image_path %}
-                                            <img src="{{ url_for('static', filename=dish.image_path) }}" alt="{{ dish.name }}" class="img-fluid" style="width: 100%; height: 100%; object-fit: cover;">
+                                            <img src="{{ url_for('static', filename=dish.image_path) }}" alt="{{ dish.name }}" class="w-full h-full object-cover">
                                         {% else %}
-                                            <div class="bg-light d-flex justify-content-center align-items-center h-100">
-                                                <i class="fas fa-utensils fa-2x text-muted"></i>
+                                            <div class="w-full h-full flex items-center justify-center">
+                                                <i class="fas fa-utensils text-gray-400 text-2xl"></i>
                                             </div>
                                         {% endif %}
                                     </div>
                                     
-                                    <!-- 中间菜品信息 -->
-                                    <div class="flex-grow-1">
-                                        <h5 class="mb-1">{{ dish.name }}</h5>
-                                        <small class="text-muted">配料: {{ dish.ingredients|length }} 种</small>
+                                    <!-- 菜品信息 -->
+                                    <div class="flex-grow">
+                                        <h3 class="font-medium text-gray-900">{{ dish.name }}</h3>
+                                        <span class="inline-block px-2 py-1 text-xs bg-gray-200 text-gray-800 rounded-full mr-2">
+                                            {{ category.name }}
+                                        </span>
+                                        <p class="text-sm text-gray-600 mt-1">
+                                            配料: {{ dish.ingredients|length }} 种
+                                        </p>
                                     </div>
                                     
-                                    <!-- 右侧添加按钮 -->
-                                    <div class="form-check form-check-inline me-0">
-                                        <input class="form-check-input dish-checkbox" type="checkbox" name="dish_ids" value="{{ dish.id }}" id="dish{{ dish.id }}_cat" style="transform: scale(1.5);">
-                                        <label class="form-check-label ms-2" for="dish{{ dish.id }}_cat">
-                                            <i class="fas fa-plus-circle text-primary" style="font-size: 1.5rem;"></i>
+                                    <!-- 选择按钮 -->
+                                    <div class="ml-4 flex items-center">
+                                        <label for="dish{{ dish.id }}" class="flex items-center cursor-pointer">
+                                            <input type="checkbox" id="dish{{ dish.id }}" name="dish_ids" value="{{ dish.id }}" class="dish-checkbox form-checkbox h-5 w-5 text-blue-600 rounded focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50">
+                                            <span class="ml-2 text-blue-600 font-medium">选择</span>
                                         </label>
                                     </div>
                                 </div>
                             {% else %}
-                                <div class="list-group-item">该分类下暂无菜品</div>
+                                <div class="p-4 text-gray-500 italic">
+                                    该分类下暂无菜品
+                                </div>
                             {% endfor %}
                         </div>
                     </div>
@@ -70,92 +80,101 @@
             </div>
         </div>
         
-        <!-- 底部提交区域 - 紧贴底部导航栏 -->
-        <div class="order-bottom-bar">
-            <div class="d-flex justify-content-between align-items-center py-2 px-3 bg-white border-top shadow-sm">
-                <div>
-                    已选择 <span id="selected-count" class="badge bg-primary">0</span> 个菜品
+        <!-- 底部提交栏 -->
+        <div class="fixed bottom-14 left-0 right-0"> <!-- 留出底部导航栏的空间 -->
+            <div class="bg-white shadow-lg border-t p-4 flex justify-between items-center">
+                <div class="text-gray-700">
+                    已选择 <span id="selected-count" class="inline-block px-2 py-1 bg-blue-600 text-white rounded-full mx-1">0</span> 个菜品
                 </div>
-                <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-shopping-cart"></i> 继续下一步
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white py-2 px-6 rounded-full shadow transition duration-150 flex items-center">
+                    <i class="fas fa-shopping-cart mr-2"></i>
+                    继续下一步
                 </button>
             </div>
         </div>
     </form>
 {% else %}
-    <div class="alert alert-info">
-        <p>暂无菜品可供选择。请先创建一些菜品。</p>
-        <a href="{{ url_for('dishes.create') }}" class="btn btn-primary">
-            <i class="fas fa-plus"></i> 创建菜品
+    <div class="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 rounded">
+        <p class="mb-2">暂无菜品可供选择。请先创建一些菜品。</p>
+        <a href="{{ url_for('dishes.create') }}" class="inline-block bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded transition duration-150 mt-2">
+            <i class="fas fa-plus mr-2"></i> 创建菜品
         </a>
     </div>
 {% endif %}
-
 {% endblock %}
 
 {% block scripts %}
 <script>
-    // 同步勾选状态
     document.addEventListener('DOMContentLoaded', function() {
         // 获取所有菜品复选框
         const checkboxes = document.querySelectorAll('.dish-checkbox');
         const selectedCountElement = document.getElementById('selected-count');
         
-        // 同步相同菜品的复选框
-        function syncCheckboxes(clickedId, isChecked) {
-            // 仅获取ID数字部分
-            const dishId = clickedId.replace('dish', '').replace('_cat', '');
-            
-            // 同步所有相同菜品ID的复选框
-            checkboxes.forEach(function(checkbox) {
-                if (checkbox.id.includes('dish' + dishId)) {
-                    checkbox.checked = isChecked;
-                }
-            });
-            
-            // 更新已选计数
-            updateSelectedCount();
-        }
-        
         // 更新已选计数
         function updateSelectedCount() {
-            // 使用Set去重
-            const selectedIds = new Set();
+            // 统计已选菜品数量
+            const selectedCount = Array.from(checkboxes).filter(checkbox => checkbox.checked).length;
+            selectedCountElement.textContent = selectedCount;
+            
+            // 更新选择菜品的样式
             checkboxes.forEach(function(checkbox) {
-                if (checkbox.checked) {
-                    const dishId = checkbox.value;
-                    selectedIds.add(dishId);
+                const dishElement = checkbox.closest('.p-4');
+                if (dishElement) {
+                    if (checkbox.checked) {
+                        dishElement.classList.add('bg-blue-50', 'border-blue-200');
+                    } else {
+                        dishElement.classList.remove('bg-blue-50', 'border-blue-200');
+                    }
                 }
             });
-            
-            selectedCountElement.textContent = selectedIds.size;
         }
         
         // 为所有复选框添加点击事件
         checkboxes.forEach(function(checkbox) {
             checkbox.addEventListener('change', function() {
-                syncCheckboxes(this.id, this.checked);
+                console.log('复选框状态改变:', this.id, '选中状态:', this.checked);
+                updateSelectedCount();
             });
+            
+            // 确保复选框可点击
+            checkbox.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+            
+            // 添加标签点击事件
+            const label = checkbox.closest('label');
+            if (label) {
+                label.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    checkbox.checked = !checkbox.checked;
+                    
+                    // 触发change事件
+                    const event = new Event('change');
+                    checkbox.dispatchEvent(event);
+                });
+            }
         });
         
         // 初始化计数
         updateSelectedCount();
         
         // 平滑滚动到锚点
-        document.querySelectorAll('.list-group-item').forEach(anchor => {
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function(e) {
-                const href = this.getAttribute('href');
-                if (href && href.startsWith('#')) {
-                    e.preventDefault();
-                    const targetId = href.substring(1);
-                    const targetElement = document.getElementById(targetId);
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                
+                if (targetElement) {
+                    // 获取目标元素的位置
+                    const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset;
+                    // 减去一些上边距，提供更好的视觉体验
+                    const offsetPosition = targetPosition - 20;
                     
-                    if (targetElement) {
-                        window.scrollTo({
-                            top: targetElement.offsetTop - 20,
-                            behavior: 'smooth'
-                        });
-                    }
+                    window.scrollTo({
+                        top: offsetPosition,
+                        behavior: 'smooth'
+                    });
                 }
             });
         });
