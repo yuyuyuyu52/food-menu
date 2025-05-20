@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#3b82f6">
     <title>{% block title %}食品菜单应用{% endblock %}</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -46,6 +48,16 @@
     <!-- 自定义CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/mobile.css') }}">
+    <style>
+        /* 懒加载图片样式 */
+        .lazy-image {
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+        .image-loaded {
+            opacity: 1;
+        }
+    </style>
     {% block styles %}{% endblock %}
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col">
@@ -116,6 +128,7 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- 自定义JS -->
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/lazyload.js') }}"></script>
     {% block scripts %}{% endblock %}
 </body>
 </html>

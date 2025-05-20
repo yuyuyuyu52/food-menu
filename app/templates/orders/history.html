@@ -2,6 +2,34 @@
 
 {% block title %}我的订单历史{% endblock %}
 
+{% block styles %}
+<style>
+    /* 隐藏滚动条但保留功能 */
+    .no-scrollbar {
+        scrollbar-width: none; /* Firefox */
+        -ms-overflow-style: none; /* IE/Edge */
+    }
+    .no-scrollbar::-webkit-scrollbar {
+        display: none; /* Chrome, Safari */
+    }
+    
+    /* 淡入加载效果 */
+    .lazy-image {
+        opacity: 0;
+        transition: opacity 0.3s ease-in-out;
+    }
+    .image-loaded {
+        opacity: 1;
+    }
+    
+    /* 菜品预览圆形样式 */
+    .dish-preview {
+        border-radius: 50%;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="w-full">
     <div class="flex flex-col md:flex-row justify-between items-center mb-6">
@@ -60,6 +88,34 @@
                     <div class="mb-2">
                         <p class="text-base font-semibold">{{ order.name or "无名称" }}</p>
                     </div>
+                    
+                    {# 添加菜品预览图 #}
+                    {% if order.dishes %}
+                    <div class="flex items-center mb-3 overflow-x-auto pb-2 no-scrollbar">
+                        {% for dish in order.dishes[:4] %}
+                            <div class="flex-shrink-0 w-14 h-14 mr-2 bg-gray-100 rounded-full overflow-hidden">
+                                {% if dish.image_path %}
+                                    {% set image_path = dish.image_path %}
+                                    {% set thumb_path = image_path.replace(image_path.split('/')[-1], 'thumb_' + image_path.split('/')[-1]) %}
+                                    <img 
+                                        src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'%3E%3C/svg%3E" 
+                                        data-src="{{ url_for('static', filename=thumb_path) }}" 
+                                        class="w-full h-full object-cover lazy-image" 
+                                        alt="{{ dish.name }}"
+                                        style="opacity: 0; transition: opacity 0.3s ease-in-out;">
+                                {% else %}
+                                    <i class="fas fa-utensils text-gray-400 flex justify-center items-center h-full"></i>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                        {% if order.dishes|length > 4 %}
+                            <div class="flex-shrink-0 w-14 h-14 bg-gray-200 rounded-full flex items-center justify-center">
+                                <span class="text-gray-600 text-xs font-medium">+{{ order.dishes|length - 4 }}</span>
+                            </div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                    
                     <div class="flex justify-between items-center">
                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                             {{ order.dishes|length }} 个菜品
@@ -77,4 +133,85 @@
         </div>
     {% endif %}
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // 初始化懒加载
+    document.addEventListener('DOMContentLoaded', function() {
+        console.time('历史页面图片懒加载初始化');
+        // 初始化IntersectionObserver监视图片懒加载
+        const lazyImageObserver = new IntersectionObserver(function(entries, observer) {
+            entries.forEach(function(entry) {
+                if (entry.isIntersecting) {
+                    let lazyImage = entry.target;
+                    if (lazyImage.dataset.src) {
+                        const tempImage = new Image();
+                        tempImage.onload = function() {
+                            lazyImage.src = lazyImage.dataset.src;
+                            lazyImage.style.opacity = '1';
+                            lazyImage.classList.remove('lazy-image');
+                            lazyImage.classList.add('image-loaded');
+                        };
+                        tempImage.src = lazyImage.dataset.src;
+                    }
+                    observer.unobserve(lazyImage);
+                }
+            });
+        }, {
+            rootMargin: '200px 0px',  // 提前200px加载
+            threshold: 0.01
+        });
+        
+        // 获取所有懒加载图片
+        const lazyImages = document.querySelectorAll('.lazy-image');
+        lazyImages.forEach(function(lazyImage) {
+            lazyImageObserver.observe(lazyImage);
+        });
+        console.timeEnd('历史页面图片懒加载初始化');
+        
+        // 优化历史订单列表滚动性能
+        if (window.requestIdleCallback) {
+            requestIdleCallback(function() {
+                const orderCards = document.querySelectorAll('.md\\:hidden > div');
+                if (orderCards.length > 10) {
+                    console.log('优化大量订单列表显示');
+                    // 对于大量订单，添加虚拟滚动逻辑
+                    const container = document.querySelector('.md\\:hidden');
+                    const visibleHeight = window.innerHeight;
+                    
+                    // 滚动时只渲染可见区域的卡片
+                    window.addEventListener('scroll', function() {
+                        if (window.scrollTimeout) {
+                            clearTimeout(window.scrollTimeout);
+                        }
+                        window.scrollTimeout = setTimeout(function() {
+                            const scrollTop = window.scrollY;
+                            orderCards.forEach(function(card, index) {
+                                const cardTop = card.getBoundingClientRect().top + scrollTop;
+                                const cardBottom = cardTop + card.offsetHeight;
+                                
+                                // 如果卡片在可见区域上下200px范围内
+                                if (cardBottom >= scrollTop - 200 && cardTop <= scrollTop + visibleHeight + 200) {
+                                    card.style.visibility = 'visible';
+                                    // 懒加载该卡片内的图片
+                                    const cardImages = card.querySelectorAll('.lazy-image:not(.image-loaded)');
+                                    cardImages.forEach(img => {
+                                        if (img.dataset.src && !img.src.includes(img.dataset.src)) {
+                                            img.src = img.dataset.src;
+                                            img.style.opacity = '1';
+                                            img.classList.add('image-loaded');
+                                        }
+                                    });
+                                } else if (orderCards.length > 20) { // 只有在订单数量非常多时才隐藏不可见的卡片
+                                    card.style.visibility = 'hidden';
+                                }
+                            });
+                        }, 100);
+                    });
+                }
+            });
+        }
+    });
+</script>
 {% endblock %}

@@ -109,7 +109,7 @@
                     
                     <div class="d-flex justify-content-between">
                         <a href="{{ url_for('dishes.index') }}" class="btn btn-secondary">取消</a>
-                        {{ form.save_button(class="btn btn-primary") }}
+                        {{ form.submit(class="btn btn-primary") }}
                     </div>
                 </form>
             </div>
@@ -146,21 +146,135 @@
             renderIngredients();
         });
         
-        // 修复的表单提交处理逻辑 - 简化版本
+        // 修复的表单提交处理逻辑
         dishForm.addEventListener('submit', function(e) {
-            // 简单地更新配料数据，不做复杂处理
             try {
+                // 更新配料数据
                 updateIngredientsData();
                 
                 // 过滤掉空的配料
                 ingredients = ingredients.filter(ing => ing.name.trim() !== '' && ing.amount.trim() !== '');
                 ingredientsData.value = JSON.stringify(ingredients);
                 
+                // 一般情况下不拦截提交，让表单正常提交
+                // 这样可以防止客户端出错导致无法提交表单
+                
                 console.log('表单数据已更新，正常提交...');
             } catch(error) {
                 console.error('表单处理时出错，但继续提交:', error);
+                // 出错时还是让表单继续提交
+            }
+            
+            // 不阻止默认提交行为，让浏览器处理表单提交
+            return true;
+        });
+            
+            function submitForm() {
+                // 移除处理标记以允许重新提交
+                setTimeout(() => {
+                    dishForm.removeAttribute('data-processing');
+                }, 1000);
+                console.timeEnd('表单提交处理');
+                
+                // 修复表单提交错误 - 使用原生DOM形式提交
+                if (typeof dishForm.submit === 'function') {
+                    dishForm.submit();
+                } else {
+                    // 如果submit不是函数，说明可能是表单中的一个同名元素
+                    // 使用原生HTML表单提交方式
+                    const submitBtn = document.querySelector('input[type="submit"]');
+                    if (submitBtn) {
+                        submitBtn.click();
+                    } else {
+                        // 最后的备选方案 - 创建一个隐藏的提交按钮并点击它
+                        const tempSubmitBtn = document.createElement('input');
+                        tempSubmitBtn.type = 'submit';
+                        tempSubmitBtn.style.display = 'none';
+                        dishForm.appendChild(tempSubmitBtn);
+                        tempSubmitBtn.click();
+                        dishForm.removeChild(tempSubmitBtn);
+                    }
+                }
             }
         });
+        
+        // 浏览器端图片压缩
+        function compressImage(file) {
+            return new Promise((resolve, reject) => {
+                // 如果文件不是图片或小于1MB，不进行压缩
+                if (!file.type.match(/image.*/)) {
+                    resolve(file);
+                    return;
+                }
+                
+                if (file.size < 1024 * 1024) {
+                    resolve(file);
+                    return;
+                }
+                
+                console.time('客户端图片压缩');
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = new Image();
+                    img.onload = function() {
+                        // 准备画布
+                        const canvas = document.createElement('canvas');
+                        let width = img.width;
+                        let height = img.height;
+                        
+                        // 限制最大尺寸
+                        const maxSize = 1200;
+                        if (width > maxSize || height > maxSize) {
+                            if (width > height) {
+                                height = Math.floor(height * (maxSize / width));
+                                width = maxSize;
+                            } else {
+                                width = Math.floor(width * (maxSize / height));
+                                height = maxSize;
+                            }
+                        }
+                        
+                        canvas.width = width;
+                        canvas.height = height;
+                        
+                        // 绘制图像
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+                        
+                        // 转换为Blob
+                        canvas.toBlob(
+                            function(blob) {
+                                // 创建新文件对象
+                                const compressedFile = new File([blob], file.name, {
+                                    type: 'image/jpeg',
+                                    lastModified: Date.now()
+                                });
+                                
+                                console.log('原始大小:', Math.round(file.size / 1024), 'KB');
+                                console.log('压缩后大小:', Math.round(compressedFile.size / 1024), 'KB');
+                                console.timeEnd('客户端图片压缩');
+                                
+                                resolve(compressedFile);
+                            },
+                            'image/jpeg',
+                            0.85 // 质量
+                        );
+                    };
+                    
+                    img.onerror = function() {
+                        reject(new Error('图片加载失败'));
+                    };
+                    
+                    img.src = e.target.result;
+                };
+                
+                reader.onerror = function() {
+                    reject(new Error('文件读取失败'));
+                };
+                
+                reader.readAsDataURL(file);
+            });
+        }
         
         // 渲染配料列表 - 优化性能
         function renderIngredients() {
@@ -248,8 +362,6 @@
         if (ingredients.length === 0) {
             addIngredientBtn.click();
         }
-        
-        console.timeEnd('表单初始化');
     });
 </script>
 {% endblock %}

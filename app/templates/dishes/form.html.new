@@ -109,7 +109,7 @@
                     
                     <div class="d-flex justify-content-between">
                         <a href="{{ url_for('dishes.index') }}" class="btn btn-secondary">取消</a>
-                        {{ form.save_button(class="btn btn-primary") }}
+                        {{ form.submit(class="btn btn-primary") }}
                     </div>
                 </form>
             </div>

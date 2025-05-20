@@ -29,7 +29,19 @@
                     {% for dish in order.dishes %}
                         <div class="bg-white rounded-lg shadow border overflow-hidden">
                             {% if dish.image_path %}
-                                <img src="{{ url_for('static', filename=dish.image_path) }}" class="w-full h-36 object-cover" alt="{{ dish.name }}">
+                                {% set image_path = dish.image_path %}
+                                {% set thumb_path = image_path.replace(image_path.split('/')[-1], 'thumb_' + image_path.split('/')[-1]) %}
+                                <div class="relative h-36 bg-gray-100">
+                                    <img 
+                                        src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'%3E%3C/svg%3E" 
+                                        data-src="{{ url_for('static', filename=thumb_path) }}" 
+                                        class="w-full h-36 object-cover lazy-image" 
+                                        alt="{{ dish.name }}"
+                                        style="opacity: 0; transition: opacity 0.3s ease-in-out;">
+                                    <div class="absolute inset-0 flex justify-center items-center loading-placeholder">
+                                        <i class="fas fa-spinner fa-spin text-gray-400"></i>
+                                    </div>
+                                </div>
                             {% else %}
                                 <div class="bg-gray-100 h-36 flex justify-center items-center">
                                     <i class="fas fa-utensils text-3xl text-gray-400"></i>
@@ -340,5 +352,85 @@
             icon.classList.remove('rotate-180');
         }
     }
+    
+    // 初始化懒加载
+    document.addEventListener('DOMContentLoaded', function() {
+        // 初始化IntersectionObserver监视图片懒加载
+        const lazyImageObserver = new IntersectionObserver(function(entries, observer) {
+            entries.forEach(function(entry) {
+                if (entry.isIntersecting) {
+                    let lazyImage = entry.target;
+                    if (lazyImage.dataset.src) {
+                        const tempImage = new Image();
+                        tempImage.onload = function() {
+                            lazyImage.src = lazyImage.dataset.src;
+                            lazyImage.style.opacity = '1';
+                            lazyImage.classList.remove('lazy-image');
+                            lazyImage.classList.add('image-loaded');
+                            
+                            // 隐藏加载占位符
+                            const placeholder = lazyImage.parentNode.querySelector('.loading-placeholder');
+                            if (placeholder) {
+                                placeholder.style.display = 'none';
+                            }
+                        };
+                        tempImage.src = lazyImage.dataset.src;
+                    }
+                    observer.unobserve(lazyImage);
+                }
+            });
+        }, {
+            rootMargin: '100px 0px',
+            threshold: 0.01
+        });
+        
+        // 获取所有懒加载图片
+        const lazyImages = document.querySelectorAll('.lazy-image');
+        lazyImages.forEach(function(lazyImage) {
+            lazyImageObserver.observe(lazyImage);
+        });
+        
+        // 优化配料复选框性能
+        const checkboxes = document.querySelectorAll('.ingredient-checkbox');
+        if (checkboxes.length > 20) {
+            // 如果复选框数量较多，使用批处理和事件委托
+            const ingredientList = document.querySelector('.ingredient-checklist');
+            if (ingredientList) {
+                // 移除所有个别的事件监听器
+                checkboxes.forEach(checkbox => {
+                    const originalOnChange = checkbox.onchange;
+                    if (originalOnChange) {
+                        checkbox.onchange = null;
+                    }
+                });
+                
+                // 添加事件委托
+                ingredientList.addEventListener('change', function(e) {
+                    if (e.target.classList.contains('ingredient-checkbox')) {
+                        const label = e.target.nextElementSibling;
+                        if (label) {
+                            const nameSpan = label.querySelector('.ingredient-name');
+                            if (nameSpan) {
+                                if (e.target.checked) {
+                                    nameSpan.classList.add('line-through', 'text-gray-400');
+                                } else {
+                                    nameSpan.classList.remove('line-through', 'text-gray-400');
+                                }
+                            }
+                        }
+                        
+                        // 使用防抖函数更新进度和保存状态
+                        if (window.ingredientUpdateTimeout) {
+                            clearTimeout(window.ingredientUpdateTimeout);
+                        }
+                        window.ingredientUpdateTimeout = setTimeout(function() {
+                            updateIngredientsProgress();
+                            saveIngredientState();
+                        }, 200);
+                    }
+                });
+            }
+        }
+    });
 </script>
 {% endblock %}

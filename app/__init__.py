@@ -16,7 +16,7 @@ def create_app(config=None):
     # 配置
     app.config.from_mapping(
         SECRET_KEY=os.environ.get('SECRET_KEY', 'dev_key_please_change'),
-        SQLALCHEMY_DATABASE_URI=os.environ.get('DATABASE_URL', 'sqlite:///instance/food_menu.db'),
+        SQLALCHEMY_DATABASE_URI=os.environ.get('DATABASE_URL', f'sqlite:///{os.path.abspath(os.path.join(os.path.dirname(os.path.dirname(__file__)), "instance", "food_menu.db"))}'),
         SQLALCHEMY_TRACK_MODIFICATIONS=False,
         UPLOAD_FOLDER=os.path.join(app.static_folder, 'uploads'),
         MAX_CONTENT_LENGTH=16 * 1024 * 1024  # 最大16MB上传
