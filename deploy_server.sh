@@ -37,7 +37,14 @@ chmod 755 instance
 # 更新数据库
 echo "=== 更新数据库 ==="
 export FLASK_APP=app.py
-flask db upgrade
+
+# 运行数据库修复脚本
+echo "=== 运行数据库修复脚本 ==="
+if [ -f "fix_db_columns.sh" ]; then
+    bash fix_db_columns.sh
+else
+    flask db upgrade
+fi
 
 # 如果数据库为空，初始化
 if [ ! -s "instance/food_menu.db" ]; then
