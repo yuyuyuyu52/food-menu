@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+
+{% block title %}查看订单详情{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>
+                {% if order.name %}订单: {{ order.name }}{% else %}订单 #{{ order.id }}{% endif %}
+            </h1>
+            <div>
+                <a href="{{ url_for('orders.history') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> 返回订单列表
+                </a>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>订单信息</h5>
+                    <span>创建时间: {{ order.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</span>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h5>包含菜品 ({{ order.dishes|length }})</h5>
+                        <div class="row row-cols-1 row-cols-md-3 g-4 mb-4">
+                            {% for dish in order.dishes %}
+                                <div class="col">
+                                    <div class="card h-100">
+                                        {% if dish.image_path %}
+                                            <img src="{{ url_for('static', filename=dish.image_path) }}" class="card-img-top" alt="{{ dish.name }}" style="height: 150px; object-fit: cover;">
+                                        {% else %}
+                                            <div class="bg-light text-center py-4">
+                                                <i class="fas fa-utensils fa-3x text-muted"></i>
+                                            </div>
+                                        {% endif %}
+                                        <div class="card-body">
+                                            <h5 class="card-title">{{ dish.name }}</h5>
+                                            <p class="card-text">
+                                                <span class="badge bg-secondary">{{ dish.category.name }}</span>
+                                            </p>
+                                        </div>
+                                        <div class="card-footer">
+                                            <a href="{{ url_for('dishes.view', id=dish.id) }}" class="btn btn-sm btn-outline-info" target="_blank">
+                                                <i class="fas fa-eye"></i> 查看详情
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="fas fa-list me-2"></i>合并后的配料清单</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if order.merged_ingredients %}
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>配料</th>
+                                            <th>数量</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for ingredient in order.merged_ingredients %}
+                                            <tr>
+                                                <td>{{ ingredient.name }}</td>
+                                                <td>{{ ingredient.amount }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <p class="text-muted">无配料信息</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-8">
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="fas fa-utensils me-2"></i>烹饪步骤</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="accordion" id="recipeAccordion">
+                            {% for dish in order.dishes %}
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="heading{{ dish.id }}">
+                                        <button class="accordion-button {% if not loop.first %}collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ dish.id }}" aria-expanded="{{ 'true' if loop.first else 'false' }}" aria-controls="collapse{{ dish.id }}">
+                                            {{ dish.name }}
+                                        </button>
+                                    </h2>
+                                    <div id="collapse{{ dish.id }}" class="accordion-collapse collapse {% if loop.first %}show{% endif %}" aria-labelledby="heading{{ dish.id }}" data-bs-parent="#recipeAccordion">
+                                        <div class="accordion-body">
+                                            <div class="recipe-content">
+                                                {{ dish.recipe|nl2br|safe }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-4">
+            <a href="{{ url_for('orders.select') }}" class="btn btn-primary">
+                <i class="fas fa-utensils"></i> 创建新订单
+            </a>
+            <a href="{{ url_for('orders.history') }}" class="btn btn-secondary">
+                <i class="fas fa-list"></i> 返回订单列表
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

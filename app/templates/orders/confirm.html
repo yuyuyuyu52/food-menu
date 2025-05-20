@@ -7,7 +7,11 @@
     <div class="col-md-12">
         <div class="alert alert-success mb-4">
             <h4 class="alert-heading"><i class="fas fa-check-circle"></i> 订单已确认!</h4>
-            <p>您的订单已经成功确认，以下是所需的配料和烹饪步骤。</p>
+            <p>您的订单已经成功确认并保存，以下是所需的配料和烹饪步骤。</p>
+            <p>您可以随时在<a href="{{ url_for('orders.history') }}" class="alert-link">我的订单</a>中查看此订单。</p>
+            {% if order %}
+                <p class="mt-2 mb-0"><strong>订单编号:</strong> #{{ order.id }} - {{ order.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+            {% endif %}
         </div>
 
         <div class="row">
@@ -75,6 +79,9 @@
         <div class="text-center mt-4">
             <a href="{{ url_for('orders.select') }}" class="btn btn-primary">
                 <i class="fas fa-utensils"></i> 继续点餐
+            </a>
+            <a href="{{ url_for('orders.history') }}" class="btn btn-info">
+                <i class="fas fa-list"></i> 查看我的订单
             </a>
             <a href="{{ url_for('main.index') }}" class="btn btn-secondary">
                 <i class="fas fa-home"></i> 返回首页

@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request, session, jsonify
-from app.models import Dish
+from app.models import Dish, Category, Order
 from app.forms import OrderForm
 from app import db
 from collections import Counter
@@ -11,7 +11,8 @@ order_bp = Blueprint('orders', __name__, url_prefix='/orders')
 def select():
     """选择菜品创建订单"""
     dishes = Dish.query.all()
-    return render_template('orders/select.html', dishes=dishes)
+    categories = Category.query.all()
+    return render_template('orders/select.html', dishes=dishes, categories=categories)
 
 @order_bp.route('/review', methods=['POST'])
 def review():
@@ -70,9 +71,35 @@ def confirm():
                 merged_amount = str(amount)
             merged_ingredients.append({'name': name, 'amount': merged_amount})
         
+        # 保存订单到数据库
+        order_name = form.name.data if hasattr(form, 'name') and form.name.data else f"订单 {len(dishes)}个菜品"
+        new_order = Order(name=order_name, merged_ingredients=merged_ingredients)
+        new_order.dishes = dishes
+        
+        try:
+            db.session.add(new_order)
+            db.session.commit()
+            flash('订单已保存！', 'success')
+        except Exception as e:
+            db.session.rollback()
+            flash(f'保存订单失败: {str(e)}', 'danger')
+        
         return render_template('orders/confirm.html', 
+                              order=new_order,
                               dishes=dishes, 
                               merged_ingredients=merged_ingredients)
     
     flash('表单验证失败', 'danger')
     return redirect(url_for('orders.select'))
+
+@order_bp.route('/history')
+def history():
+    """查看订单历史"""
+    orders = Order.query.order_by(Order.created_at.desc()).all()
+    return render_template('orders/history.html', orders=orders)
+
+@order_bp.route('/view/<int:id>')
+def view(id):
+    """查看订单详情"""
+    order = Order.query.get_or_404(id)
+    return render_template('orders/view.html', order=order)

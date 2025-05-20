@@ -23,13 +23,16 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('categories.index') }}">分类</a>
+                        <a class="nav-link {% if request.endpoint and request.endpoint.startswith('orders.select') %}active{% endif %}" href="{{ url_for('orders.select') }}">点餐</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('dishes.index') }}">菜品</a>
+                        <a class="nav-link {% if request.endpoint and request.endpoint == 'orders.history' %}active{% endif %}" href="{{ url_for('orders.history') }}">我的订单</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('orders.select') }}">点餐</a>
+                        <a class="nav-link {% if request.endpoint and request.endpoint.startswith('categories') %}active{% endif %}" href="{{ url_for('categories.index') }}">分类</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint and request.endpoint.startswith('dishes') %}active{% endif %}" href="{{ url_for('dishes.index') }}">菜品</a>
                     </li>
                 </ul>
             </div>

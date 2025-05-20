@@ -28,5 +28,6 @@ class DishForm(FlaskForm):
 
 class OrderForm(FlaskForm):
     """订单表单"""
+    name = StringField('订单名称', validators=[Optional(), Length(max=100)])
     dishes = FieldList(HiddenField('菜品ID'), min_entries=1)
     submit = SubmitField('确认订单')

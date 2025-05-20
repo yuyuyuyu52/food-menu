@@ -1,26 +1,18 @@
 from app import create_app, db
-from flask import g, current_app
-import os
-import click
-from datetime import datetime
-from app.models import Category, Dish
+from app.models import Category, Dish, Order
 
 app = create_app()
 
-@app.before_request
-def before_request():
-    g.now = datetime.utcnow()
-
-@app.cli.command("init-db")
-def init_db():
-    """初始化数据库"""
+with app.app_context():
+    # 删除所有表（如果存在）
     db.drop_all()
+    
+    # 创建所有表
     db.create_all()
-    click.echo("数据库已初始化!")
-
-@app.cli.command("seed-db")
-def seed_db():
-    """添加示例数据到数据库"""
+    
+    print("数据库重新初始化成功！")
+    
+    # 添加示例数据
     # 创建分类
     categories = [
         Category(name="主食"),
@@ -31,6 +23,7 @@ def seed_db():
     ]
     db.session.add_all(categories)
     db.session.commit()
+    print("分类数据已添加！")
     
     # 创建菜品
     dishes = [
@@ -81,8 +74,6 @@ def seed_db():
     ]
     db.session.add_all(dishes)
     db.session.commit()
+    print("菜品数据已添加！")
     
-    click.echo("示例数据已添加!")
-
-if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5000, debug=False)
+    print("数据库初始化完成！")

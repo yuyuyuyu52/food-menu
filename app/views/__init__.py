@@ -9,5 +9,5 @@ main_bp = Blueprint('main', __name__)
 
 @main_bp.route('/')
 def index():
-    """重定向到分类列表"""
-    return redirect(url_for('categories.index'))
+    """重定向到点菜页面"""
+    return redirect(url_for('orders.select'))

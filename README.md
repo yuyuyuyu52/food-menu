@@ -7,6 +7,7 @@
 - 分类管理：增加、修改、删除食品分类
 - 菜品管理：增加、修改、删除菜品，包括名称、图片、配料和烹饪步骤
 - 订单流程：用户可选择多个菜品，系统会自动合并所需配料并显示烹饪步骤
+- 订单历史：保存并查看历史订单，包括菜品、配料和烹饪步骤
 - 响应式设计：使用 Bootstrap 5 确保在各种设备上都有良好的用户体验
 
 ## 技术栈
@@ -67,6 +68,37 @@ flask run
 
 应用将在 http://127.0.0.1:5000/ 上运行。
 
+### 在服务器上部署
+
+如果您想在服务器上部署并允许外部IP访问，可以使用以下命令：
+
+```bash
+# 使用Python直接运行（推荐用于测试）
+python app.py
+
+# 或者使用以下命令在后台运行
+nohup python app.py > app.log 2>&1 &
+```
+
+默认情况下，应用将在 http://服务器IP:5000/ 上运行。
+
+要在后台持续运行应用，您也可以使用screen或tmux工具：
+
+```bash
+# 安装screen
+sudo apt-get install screen
+
+# 创建一个新的screen会话
+screen -S food-menu
+
+# 在screen会话中启动应用
+python app.py
+
+# 按下Ctrl+A然后按D来分离会话（应用将继续在后台运行）
+# 要重新连接到会话，使用
+screen -r food-menu
+```
+
 ## 项目结构
 
 ```
@@ -101,9 +133,16 @@ food-menu/
   - recipe: 烹饪步骤
   - category_id: 所属分类 (外键)
 
+- **Order**: l订单
+  - id: 唯一标识符
+  - name: 订单名称 (可选)
+  - merged_ingredients_json: 合并后的配料列表 (JSON 格式)
+  - created_at: 订单创建时间
+  - dishes: 关联的菜品列表 (多对多关系)
+
 ## 路由结构
 
-- `/`: 主页，重定向到分类列表
+- `/`: 主页，直接显示点菜页面
 - `/categories/`: 分类列表
 - `/categories/create`: 创建分类
 - `/categories/<id>/edit`: 编辑分类
@@ -116,6 +155,8 @@ food-menu/
 - `/orders/select`: 选择菜品
 - `/orders/review`: 查看所选菜品
 - `/orders/confirm`: 确认并显示合并后的配料和烹饪步骤
+- `/orders/history`: 查看订单历史
+- `/orders/view/<id>`: 查看订单详情
 
 ## 开发指南
 

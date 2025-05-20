@@ -58,6 +58,19 @@
                 {{ entry }}
             {% endfor %}
             
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">订单信息</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">订单名称 (可选)</label>
+                        {{ form.name(class="form-control", placeholder="例如: 家庭聚餐, 周末派对...") }}
+                        <div class="form-text">给您的订单起个名字，方便以后查找</div>
+                    </div>
+                </div>
+            </div>
+            
             <div class="text-center">
                 <a href="{{ url_for('orders.select') }}" class="btn btn-secondary me-2">
                     <i class="fas fa-edit"></i> 修改选择
