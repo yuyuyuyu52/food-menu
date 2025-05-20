@@ -2,6 +2,8 @@
 
 {% block title %}{{ title }}{% endblock %}
 
+{% block header_title %}{% if form.id.data %}编辑菜品{% else %}新建菜品{% endif %}{% endblock %}
+
 {% block styles %}
 <style>
     .ingredients-container {

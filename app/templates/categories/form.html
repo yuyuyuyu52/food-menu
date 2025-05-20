@@ -2,6 +2,8 @@
 
 {% block title %}{{ title }}{% endblock %}
 
+{% block header_title %}{% if form.id.data %}编辑分类{% else %}新建分类{% endif %}{% endblock %}
+
 {% block content %}
 <div class="row">
     <div class="col-md-8 mx-auto">

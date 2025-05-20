@@ -2,14 +2,15 @@
 
 {% block title %}分类列表{% endblock %}
 
-{% block content %}
-<div class="bg-white rounded-lg shadow-md p-4 mb-6 flex justify-between items-center">
-    <h1 class="text-2xl font-bold text-gray-800">分类列表</h1>
-    <a href="{{ url_for('categories.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded shadow-sm flex items-center">
-        <i class="fas fa-plus mr-2"></i> 新建分类
-    </a>
-</div>
+{% block header_title %}分类{% endblock %}
 
+{% block header_actions %}
+<a href="{{ url_for('categories.create') }}" class="bg-blue-700 hover:bg-blue-800 text-white py-2 px-4 rounded shadow-sm flex items-center">
+    <i class="fas fa-plus mr-2"></i> 新建分类
+</a>
+{% endblock %}
+
+{% block content %}
 {% if categories %}
     <div class="bg-white rounded-lg shadow-md overflow-hidden">
         {% for category in categories %}
