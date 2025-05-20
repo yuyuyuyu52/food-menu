@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ category.name }}{% endblock %}
+
+{% block content %}
+<div class="bg-white rounded-lg shadow-md overflow-hidden mb-6">
+    <div class="p-4 border-b flex justify-between items-center">
+        <h1 class="text-2xl font-bold text-gray-800">{{ category.name }}</h1>
+        <div class="flex space-x-2">
+            <a href="{{ url_for('categories.index') }}" class="bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded shadow-sm flex items-center">
+                <i class="fas fa-arrow-left mr-2"></i> 返回
+            </a>
+            <a href="{{ url_for('categories.edit', id=category.id) }}" class="bg-yellow-500 hover:bg-yellow-600 text-white py-2 px-4 rounded shadow-sm flex items-center">
+                <i class="fas fa-edit mr-2"></i> 编辑
+            </a>
+            <button type="button" class="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded shadow-sm flex items-center" onclick="openDeleteDialog('{{ category.id }}')">
+                <i class="fas fa-trash-alt mr-2"></i> 删除
+            </button>
+        </div>
+    </div>
+
+    <div class="p-4">
+        <div class="mb-4">
+            <span class="inline-block px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
+                包含 {{ category.dishes|length }} 个菜品
+            </span>
+        </div>
+
+        {% if category.dishes %}
+            <h2 class="text-xl font-semibold text-gray-800 mb-3">该分类下的菜品：</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {% for dish in category.dishes %}
+                    <a href="{{ url_for('dishes.view', id=dish.id) }}" class="bg-white border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition duration-150">
+                        <div class="h-40 bg-gray-100 overflow-hidden">
+                            {% if dish.image_path %}
+                                {% set image_path = dish.image_path %}
+                                {% set thumb_path = image_path.replace(image_path.split('/')[-1], 'thumb_' + image_path.split('/')[-1]) %}
+                                <img 
+                                    src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'%3E%3C/svg%3E" 
+                                    data-src="{{ url_for('static', filename=thumb_path) }}" 
+                                    alt="{{ dish.name }}" 
+                                    class="lazy-image w-full h-full object-cover"
+                                    style="opacity: 0; transition: opacity 0.3s ease-in-out;">
+                            {% else %}
+                                <div class="w-full h-full flex items-center justify-center">
+                                    <i class="fas fa-utensils text-gray-400 text-2xl"></i>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="p-3">
+                            <h3 class="text-lg font-medium text-gray-900">{{ dish.name }}</h3>
+                            <div class="text-sm text-gray-600 mt-1">配料: {{ dish.ingredients|length }} 种</div>
+                        </div>
+                    </a>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded">
+                <p>该分类下暂无菜品，请先添加菜品。</p>
+                <a href="{{ url_for('dishes.create') }}" class="mt-2 inline-block bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded shadow-sm">
+                    <i class="fas fa-plus mr-2"></i> 添加菜品
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- 删除确认对话框 -->
+<div id="deleteDialog{{ category.id }}" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-lg shadow-lg w-11/12 max-w-md mx-auto">
+        <div class="p-4 border-b border-gray-200">
+            <h3 class="text-lg font-medium text-gray-900">确认删除</h3>
+        </div>
+        <div class="p-4">
+            <p class="text-gray-700">确定要删除分类 "{{ category.name }}" 吗？此操作将同时删除该分类下的所有菜品，且不可恢复！</p>
+        </div>
+        <div class="p-4 bg-gray-50 rounded-b-lg flex justify-end space-x-3">
+            <button type="button" class="bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 px-4 rounded" onclick="closeDeleteDialog('{{ category.id }}')">取消</button>
+            <form action="{{ url_for('categories.delete', id=category.id) }}" method="post" class="m-0">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                <button type="submit" class="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded">确定删除</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // 删除对话框控制
+    function openDeleteDialog(id) {
+        document.getElementById('deleteDialog' + id).classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+    
+    function closeDeleteDialog(id) {
+        document.getElementById('deleteDialog' + id).classList.add('hidden');
+        document.body.style.overflow = '';
+    }
+    
+    // 图片懒加载
+    document.addEventListener('DOMContentLoaded', function() {
+        if ('IntersectionObserver' in window) {
+            const lazyImages = document.querySelectorAll('.lazy-image');
+            
+            const imageObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const image = entry.target;
+                        
+                        // 开始加载图片
+                        const tempImage = new Image();
+                        tempImage.onload = function() {
+                            image.src = image.dataset.src;
+                            image.style.opacity = '1';
+                            
+                            // 一旦加载完成，不再需要观察
+                            imageObserver.unobserve(image);
+                        };
+                        tempImage.src = image.dataset.src;
+                    }
+                });
+            }, {
+                rootMargin: '200px 0px',
+                threshold: 0.01
+            });
+            
+            lazyImages.forEach(image => {
+                imageObserver.observe(image);
+            });
+        } else {
+            // 回退方案：如果不支持IntersectionObserver，直接加载所有图片
+            document.querySelectorAll('.lazy-image').forEach(image => {
+                image.src = image.dataset.src;
+                image.style.opacity = '1';
+            });
+        }
+    });
+</script>
+{% endblock %}

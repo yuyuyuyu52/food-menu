@@ -61,3 +61,9 @@ def delete(id):
         flash(f'删除分类失败: {str(e)}', 'danger')
     
     return redirect(url_for('categories.index'))
+
+@category_bp.route('/<int:id>')
+def view(id):
+    """查看分类详情"""
+    category = Category.query.get_or_404(id)
+    return render_template('categories/view.html', category=category)
