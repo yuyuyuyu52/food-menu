@@ -3,106 +3,80 @@
 {% block title %}菜品列表{% endblock %}
 
 {% block content %}
-<div class="mui-paper mui-elevation-1 mui-padding mui-margin-bottom">
-    <div style="display: flex; flex-direction: column; gap: 10px;">
-        <div class="mui-typography-h4">
-            {% if category %}
+<div class="bg-white rounded-lg shadow-md p-4 mb-6 flex justify-between items-center">
+    <h1 class="text-2xl font-bold text-gray-800">
+        {% if category %}
             {{ category.name }} - 菜品列表
-            {% else %}
+        {% else %}
             所有菜品
-            {% endif %}
-        </div>
-        <div style="display: flex; flex-wrap: wrap; gap: 8px;">
-            {% if category %}
-            <a href="{{ url_for('categories.index') }}" class="mui-button mui-button-contained" style="background-color: #9e9e9e; color: white;">
-                <i class="material-icons" style="margin-right: 4px; font-size: 16px; vertical-align: text-bottom;">arrow_back</i> 返回分类
+        {% endif %}
+    </h1>
+    <div class="flex space-x-2">
+        {% if category %}
+            <a href="{{ url_for('categories.index') }}" class="bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded shadow-sm flex items-center">
+                <i class="fas fa-arrow-left mr-2"></i> 返回分类
             </a>
-            {% endif %}
-            <a href="{{ url_for('dishes.create') }}" class="mui-button mui-button-contained mui-button-primary">
-                <i class="material-icons" style="margin-right: 4px; font-size: 16px; vertical-align: text-bottom;">add</i> 新建菜品
-            </a>
-        </div>
+        {% endif %}
+        <a href="{{ url_for('dishes.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded shadow-sm flex items-center">
+            <i class="fas fa-plus mr-2"></i> 新建菜品
+        </a>
     </div>
 </div>
 
 {% if dishes %}
-    <div class="mui-grid">
+    <div class="bg-white rounded-lg shadow-md overflow-hidden">
         {% for dish in dishes %}
-            <div class="mui-grid-item mui-grid-xs-12 mui-grid-md-4 mui-margin-bottom">
-                <div class="mui-paper mui-elevation-1" style="height: 100%; display: flex; flex-direction: column;">
-                    {% if dish.image_path %}
-                        <div style="height: 200px; overflow: hidden; background-color: #f5f5f5;">
+            <div class="p-4 border-b last:border-b-0">
+                <div class="flex items-center">
+                    <!-- 菜品图片 - 可点击进入详情页 -->
+                    <a href="{{ url_for('dishes.view', id=dish.id) }}" class="w-24 h-24 flex-shrink-0 rounded overflow-hidden mr-4 bg-gray-100 block">
+                        {% if dish.image_path %}
                             {% set image_path = dish.image_path %}
                             {% set thumb_path = image_path.replace(image_path.split('/')[-1], 'thumb_' + image_path.split('/')[-1]) %}
                             <img 
                                 src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'%3E%3C/svg%3E" 
                                 data-src="{{ url_for('static', filename=thumb_path) }}" 
                                 alt="{{ dish.name }}" 
-                                class="lazy-image" 
-                                style="width: 100%; height: 100%; object-fit: cover; transition: opacity 0.3s ease-in-out; opacity: 0;"
-                                onload="this.style.opacity='1';">
-                            <noscript>
-                                <img src="{{ url_for('static', filename=thumb_path) }}" alt="{{ dish.name }}" style="width: 100%; height: 100%; object-fit: cover;">
-                            </noscript>
-                        </div>
-                    {% else %}
-                        <div style="height: 200px; display: flex; justify-content: center; align-items: center; background-color: #f5f5f5;">
-                            <i class="material-icons" style="font-size: 48px; color: #9e9e9e;">restaurant</i>
-                        </div>
-                    {% endif %}
-                    <div style="padding: 16px; flex-grow: 1;">
-                        <div class="mui-typography-h5">{{ dish.name }}</div>
-                        <div style="margin: 8px 0;">
-                            <span class="mui-chip" style="background-color: #9e9e9e; color: white;">{{ dish.category.name }}</span>
-                        </div>
-                        <div class="mui-typography-body2" style="color: #757575;">
-                            配料: {{ dish.ingredients|length }} 种
-                        </div>
-                    </div>
-                    <div style="padding: 8px 16px 16px 16px;">
-                        <div style="display: flex; flex-direction: column; gap: 8px;">
-                            <a href="{{ url_for('dishes.view', id=dish.id) }}" class="mui-button mui-button-contained" style="width: 100%; background-color: #3f51b5; color: white;">
-                                <i class="material-icons" style="font-size: 16px; margin-right: 4px;">visibility</i> 详情
-                            </a>
-                            <div style="display: flex; gap: 8px;">
-                                <a href="{{ url_for('dishes.edit', id=dish.id) }}" class="mui-button mui-button-contained" style="flex: 1; background-color: #ff9800; color: white;">
-                                    <i class="material-icons" style="font-size: 16px; margin-right: 4px;">edit</i> 编辑
-                                </a>
-                                <button type="button" class="mui-button mui-button-contained" style="flex: 1; background-color: #f44336; color: white;" onclick="openDeleteDialog('{{ dish.id }}')">
-                                    <i class="material-icons" style="font-size: 16px; margin-right: 4px;">delete</i> 删除
-                                </button>
+                                class="lazy-image w-full h-full object-cover"
+                                style="opacity: 0; transition: opacity 0.3s ease-in-out;">
+                        {% else %}
+                            <div class="w-full h-full flex items-center justify-center">
+                                <i class="fas fa-utensils text-gray-400 text-2xl"></i>
                             </div>
-                        </div>
+                        {% endif %}
+                    </a>
+                    
+                <!-- 菜品信息 - 整个区域可点击进入详情页 -->
+                <a href="{{ url_for('dishes.view', id=dish.id) }}" class="flex-grow block hover:bg-blue-50 transition duration-150">
+                    <h2 class="text-xl font-medium text-gray-900">{{ dish.name }}</h2>
+                    <div class="mt-1">
+                        <span class="inline-block px-2 py-1 text-xs bg-gray-200 text-gray-800 rounded-full">
+                            {{ dish.category.name }}
+                        </span>
+                        <span class="text-sm text-gray-600 ml-2">
+                            配料: {{ dish.ingredients|length }} 种
+                        </span>
                     </div>
+                </a>
+                    
+                <!-- 操作按钮 - 只保留快捷查看 -->
+                <div class="ml-2">
+                    <a href="{{ url_for('dishes.view', id=dish.id) }}" class="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded shadow-sm flex items-center">
+                        <i class="fas fa-eye mr-2"></i> 查看
+                    </a>
                 </div>
             </div>
+            </div>
 
-            <!-- MUI风格删除确认对话框 -->
-            <div id="deleteDialog{{ dish.id }}" class="mui-dialog-overlay" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.5); z-index: 2000; align-items: center; justify-content: center;">
-                <div class="mui-paper mui-elevation-24" style="width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; border-radius: 4px;">
-                    <div style="padding: 16px 24px; color: rgba(0, 0, 0, 0.87); background-color: #fff; border-bottom: 1px solid #e0e0e0;">
-                        <div class="mui-typography-h5">确认删除</div>
-                    </div>
-                    <div style="padding: 16px 24px; overflow-y: auto;">
-                        <p class="mui-typography-body1">确定要删除菜品 "{{ dish.name }}" 吗？此操作不可恢复！</p>
-                    </div>
-                    <div style="display: flex; justify-content: flex-end; padding: 8px; gap: 8px; border-top: 1px solid #e0e0e0;">
-                        <button type="button" class="mui-button" onclick="closeDeleteDialog('{{ dish.id }}')">取消</button>
-                        <form action="{{ url_for('dishes.delete', id=dish.id) }}" method="post" style="margin: 0;">
-                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-                            <button type="submit" class="mui-button mui-button-contained" style="background-color: #f44336; color: white;">确定删除</button>
-                        </form>
-                    </div>
-                </div>
             </div>
         {% endfor %}
     </div>
 {% else %}
-    <div class="mui-alert mui-alert-info mui-paper mui-elevation-1">
+    <div class="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 rounded">
         {% if category %}
-        <div class="mui-alert-message">该分类下暂无菜品，请点击"新建菜品"按钮创建。</div>
+            <p>该分类下暂无菜品，请点击"新建菜品"按钮创建。</p>
         {% else %}
-        <div class="mui-alert-message">暂无菜品，请点击"新建菜品"按钮创建。</div>
+            <p>暂无菜品，请点击"新建菜品"按钮创建。</p>
         {% endif %}
     </div>
 {% endif %}
@@ -110,14 +84,43 @@
 
 {% block scripts %}
 <script>
-    function openDeleteDialog(id) {
-        document.getElementById('deleteDialog' + id).style.display = 'flex';
-        document.body.style.overflow = 'hidden';
-    }
-    
-    function closeDeleteDialog(id) {
-        document.getElementById('deleteDialog' + id).style.display = 'none';
-        document.body.style.overflow = '';
-    }
+    // 激活懒加载
+    document.addEventListener('DOMContentLoaded', function() {
+        if ('IntersectionObserver' in window) {
+            const lazyImages = document.querySelectorAll('.lazy-image');
+            
+            const imageObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const image = entry.target;
+                        
+                        // 开始加载图片
+                        const tempImage = new Image();
+                        tempImage.onload = function() {
+                            image.src = image.dataset.src;
+                            image.style.opacity = '1';
+                            
+                            // 一旦加载完成，不再需要观察
+                            imageObserver.unobserve(image);
+                        };
+                        tempImage.src = image.dataset.src;
+                    }
+                });
+            }, {
+                rootMargin: '200px 0px',
+                threshold: 0.01
+            });
+            
+            lazyImages.forEach(image => {
+                imageObserver.observe(image);
+            });
+        } else {
+            // 回退方案：如果不支持IntersectionObserver，直接加载所有图片
+            document.querySelectorAll('.lazy-image').forEach(image => {
+                image.src = image.dataset.src;
+                image.style.opacity = '1';
+            });
+        }
+    });
 </script>
 {% endblock %}
