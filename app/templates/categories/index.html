@@ -4,11 +4,13 @@
 
 {% block content %}
 <div class="mui-paper mui-elevation-1 mui-padding mui-margin-bottom">
-    <div style="display: flex; justify-content: space-between; align-items: center;">
+    <div style="display: flex; flex-direction: column; gap: 10px;">
         <div class="mui-typography-h4">分类列表</div>
-        <a href="{{ url_for('categories.create') }}" class="mui-button mui-button-contained mui-button-primary">
-            <i class="material-icons" style="margin-right: 4px; font-size: 16px; vertical-align: text-bottom;">add</i> 新建分类
-        </a>
+        <div>
+            <a href="{{ url_for('categories.create') }}" class="mui-button mui-button-contained mui-button-primary">
+                <i class="material-icons" style="margin-right: 4px; font-size: 16px; vertical-align: text-bottom;">add</i> 新建分类
+            </a>
+        </div>
     </div>
 </div>
 
@@ -24,16 +26,18 @@
                         </div>
                     </div>
                     <div style="padding: 8px 16px 16px 16px;">
-                        <div style="display: flex; gap: 8px;">
-                            <a href="{{ url_for('dishes.index', category_id=category.id) }}" class="mui-button mui-button-contained" style="flex: 1; background-color: #3f51b5; color: white;">
+                        <div style="display: flex; flex-direction: column; gap: 8px;">
+                            <a href="{{ url_for('dishes.index', category_id=category.id) }}" class="mui-button mui-button-contained" style="width: 100%; background-color: #3f51b5; color: white;">
                                 <i class="material-icons" style="font-size: 16px; margin-right: 4px;">restaurant_menu</i> 查看菜品
                             </a>
-                            <a href="{{ url_for('categories.edit', id=category.id) }}" class="mui-button mui-button-contained" style="flex: 1; background-color: #ff9800; color: white;">
-                                <i class="material-icons" style="font-size: 16px; margin-right: 4px;">edit</i> 编辑
-                            </a>
-                            <button type="button" class="mui-button mui-button-contained" style="flex: 1; background-color: #f44336; color: white;" onclick="openDeleteDialog('{{ category.id }}')">
-                                <i class="material-icons" style="font-size: 16px; margin-right: 4px;">delete</i> 删除
-                            </button>
+                            <div style="display: flex; gap: 8px;">
+                                <a href="{{ url_for('categories.edit', id=category.id) }}" class="mui-button mui-button-contained" style="flex: 1; background-color: #ff9800; color: white;">
+                                    <i class="material-icons" style="font-size: 16px; margin-right: 4px;">edit</i> 编辑
+                                </a>
+                                <button type="button" class="mui-button mui-button-contained" style="flex: 1; background-color: #f44336; color: white;" onclick="openDeleteDialog('{{ category.id }}')">
+                                    <i class="material-icons" style="font-size: 16px; margin-right: 4px;">delete</i> 删除
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>

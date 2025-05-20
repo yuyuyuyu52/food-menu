@@ -4,7 +4,7 @@
 
 {% block content %}
 <div class="mui-paper mui-elevation-1 mui-padding mui-margin-bottom">
-    <div style="display: flex; justify-content: space-between; align-items: center;">
+    <div style="display: flex; flex-direction: column; gap: 10px;">
         <div class="mui-typography-h4">
             {% if category %}
             {{ category.name }} - 菜品列表
@@ -12,9 +12,9 @@
             所有菜品
             {% endif %}
         </div>
-        <div>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px;">
             {% if category %}
-            <a href="{{ url_for('categories.index') }}" class="mui-button mui-button-contained" style="margin-right: 8px; background-color: #9e9e9e; color: white;">
+            <a href="{{ url_for('categories.index') }}" class="mui-button mui-button-contained" style="background-color: #9e9e9e; color: white;">
                 <i class="material-icons" style="margin-right: 4px; font-size: 16px; vertical-align: text-bottom;">arrow_back</i> 返回分类
             </a>
             {% endif %}
@@ -49,16 +49,18 @@
                         </div>
                     </div>
                     <div style="padding: 8px 16px 16px 16px;">
-                        <div style="display: flex; gap: 8px;">
-                            <a href="{{ url_for('dishes.view', id=dish.id) }}" class="mui-button mui-button-contained" style="flex: 1; background-color: #3f51b5; color: white;">
+                        <div style="display: flex; flex-direction: column; gap: 8px;">
+                            <a href="{{ url_for('dishes.view', id=dish.id) }}" class="mui-button mui-button-contained" style="width: 100%; background-color: #3f51b5; color: white;">
                                 <i class="material-icons" style="font-size: 16px; margin-right: 4px;">visibility</i> 详情
                             </a>
-                            <a href="{{ url_for('dishes.edit', id=dish.id) }}" class="mui-button mui-button-contained" style="flex: 1; background-color: #ff9800; color: white;">
-                                <i class="material-icons" style="font-size: 16px; margin-right: 4px;">edit</i> 编辑
-                            </a>
-                            <button type="button" class="mui-button mui-button-contained" style="flex: 1; background-color: #f44336; color: white;" onclick="openDeleteDialog('{{ dish.id }}')">
-                                <i class="material-icons" style="font-size: 16px; margin-right: 4px;">delete</i> 删除
-                            </button>
+                            <div style="display: flex; gap: 8px;">
+                                <a href="{{ url_for('dishes.edit', id=dish.id) }}" class="mui-button mui-button-contained" style="flex: 1; background-color: #ff9800; color: white;">
+                                    <i class="material-icons" style="font-size: 16px; margin-right: 4px;">edit</i> 编辑
+                                </a>
+                                <button type="button" class="mui-button mui-button-contained" style="flex: 1; background-color: #f44336; color: white;" onclick="openDeleteDialog('{{ dish.id }}')">
+                                    <i class="material-icons" style="font-size: 16px; margin-right: 4px;">delete</i> 删除
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>

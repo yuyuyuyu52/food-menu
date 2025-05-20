@@ -1,0 +1,149 @@
+/* 移动端优化样式 */
+
+@media (max-width: 640px) {
+    /* 常规表格优化为卡片式显示 */
+    .responsive-table-card {
+        display: block;
+        width: 100%;
+    }
+    
+    .responsive-table-card thead {
+        display: none;
+    }
+    
+    .responsive-table-card tbody {
+        display: block;
+        width: 100%;
+    }
+    
+    .responsive-table-card tr {
+        display: block;
+        margin-bottom: 1rem;
+        border-radius: 0.5rem;
+        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+        overflow: hidden;
+    }
+    
+    .responsive-table-card td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid #f3f4f6;
+    }
+    
+    .responsive-table-card td:before {
+        content: attr(data-label);
+        font-weight: 600;
+        margin-right: 1rem;
+        color: #4b5563;
+    }
+    
+    /* 按钮在移动端的优化 */
+    .mobile-full-width-btn {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+    
+    /* 移动端文本适应 */
+    .mobile-text-sm {
+        font-size: 0.875rem;
+    }
+    
+    /* 移动端中垂直间距调整 */
+    .mobile-py-2 {
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+    }
+    
+    /* 移动端水平间距调整 */
+    .mobile-px-3 {
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+    }
+    
+    /* 移动端栅格布局调整 */
+    .mobile-grid-1 {
+        grid-template-columns: repeat(1, minmax(0, 1fr));
+    }
+    
+    /* 移动端隐藏某些元素 */
+    .mobile-hidden {
+        display: none;
+    }
+    
+    /* 移动端显示某些元素 */
+    .mobile-block {
+        display: block;
+    }
+    
+    /* 为底部导航栏增加更大的空间 */
+    body {
+        padding-bottom: 80px;
+    }
+    
+    /* 移动端中的标题和按钮布局优化 */
+    .mobile-stack {
+        flex-direction: column;
+        gap: 0.75rem;
+        align-items: flex-start;
+    }
+    
+    /* 移动端中的面包屑导航优化 */
+    .mobile-breadcrumb {
+        white-space: nowrap;
+        overflow-x: auto;
+        padding-bottom: 0.5rem;
+    }
+}
+
+/* 模态对话框在移动端的适应性改进 */
+@media (max-width: 640px) {
+    .modal-dialog {
+        width: 95% !important;
+        margin: 0.5rem auto !important;
+    }
+    
+    .modal-content {
+        border-radius: 0.5rem !important;
+    }
+    
+    .modal-header, 
+    .modal-body, 
+    .modal-footer {
+        padding: 0.75rem !important;
+    }
+}
+
+/* 增强移动端触摸体验 */
+@media (max-width: 640px) {
+    .touch-target {
+        min-height: 44px;
+        min-width: 44px;
+    }
+    
+    .touch-list-item {
+        padding-top: 0.75rem;
+        padding-bottom: 0.75rem;
+    }
+    
+    /* 确保表单元素在移动端有足够大的点击区域 */
+    input[type="checkbox"],
+    input[type="radio"] {
+        min-width: 20px;
+        min-height: 20px;
+    }
+    
+    /* 移动端表单元素间距 */
+    .form-group-mobile {
+        margin-bottom: 1rem;
+    }
+    
+    /* 移动端按钮样式增强 */
+    button, 
+    .btn, 
+    [type="button"], 
+    [type="submit"] {
+        padding: 0.625rem 1rem;
+    }
+}

@@ -17,15 +17,15 @@
 
     <div class="bg-white rounded-lg shadow-md overflow-hidden mb-6">
         <div class="bg-blue-600 text-white p-3">
-            <div class="flex justify-between items-center">
-                <h5 class="font-medium"><i class="fas fa-info-circle mr-2"></i>订单信息</h5>
-                <span class="text-sm">创建时间: {{ order.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</span>
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center">
+                <h5 class="font-medium mb-2 sm:mb-0"><i class="fas fa-info-circle mr-2"></i>订单信息</h5>
+                <span class="text-sm">创建时间: {{ order.created_at.strftime('%Y-%m-%d %H:%M:%S') if order.created_at else g.now.strftime('%Y-%m-%d %H:%M:%S') }}</span>
             </div>
         </div>
         <div class="p-4">
             <div class="w-full">
                 <h5 class="text-lg font-medium text-gray-800 mb-3">包含菜品 ({{ order.dishes|length }})</h5>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
                     {% for dish in order.dishes %}
                         <div class="bg-white rounded-lg shadow border overflow-hidden">
                             {% if dish.image_path %}
