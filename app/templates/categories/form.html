@@ -2,7 +2,7 @@
 
 {% block title %}{{ title }}{% endblock %}
 
-{% block header_title %}{% if form.id.data %}编辑分类{% else %}新建分类{% endif %}{% endblock %}
+{% block header_title %}{% if category is defined %}编辑分类{% else %}新建分类{% endif %}{% endblock %}
 
 {% block content %}
 <div class="row">
