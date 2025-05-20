@@ -7,6 +7,8 @@ body {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
+    /* 为底部导航栏留出空间 */
+    padding-bottom: 70px;
 }
 
 .content {
@@ -15,6 +17,8 @@ body {
 
 .footer {
     flex-shrink: 0;
+    /* 确保页脚在底部导航栏之上 */
+    margin-bottom: 56px;
 }
 
 /* 卡片样式 */
@@ -54,6 +58,58 @@ body {
     background-color: rgba(0, 0, 0, 0.03);
 }
 
+/* 横向分类导航 */
+.category-scroll-container {
+    position: sticky;
+    top: 56px;
+    z-index: 100;
+    background-color: #fff;
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.category-item .btn {
+    white-space: nowrap;
+    border-radius: 20px;
+    padding: 8px 20px;
+    transition: all 0.2s ease;
+}
+
+.category-item .btn-primary {
+    transform: scale(1.05);
+}
+
+/* 底部固定区域 */
+.fixed-bottom-bar {
+    position: fixed;
+    bottom: 56px;
+    left: 0;
+    right: 0;
+    padding: 0 15px;
+    z-index: 999;
+}
+
+/* 点菜页面底部订单栏 */
+.order-bottom-bar {
+    position: fixed;
+    bottom: 56px; /* 与底部导航栏紧贴 */
+    left: 0;
+    right: 0;
+    z-index: 1020;
+    background-color: white;
+}
+
+/* 为底部导航栏预留空间 */
+.container {
+    padding-bottom: 110px; /* 为底部导航栏+订单栏预留空间 */
+}
+
+/* 点菜页面底部提交按钮区域 */
+.fixed-bottom-bar .btn-lg {
+    border-radius: 30px;
+    padding: 10px 25px;
+}
+
 /* 响应式调整 */
 @media (max-width: 768px) {
     .card-title {
@@ -83,4 +139,36 @@ h1::after {
 h1:hover::after {
     transform: scaleX(1);
     transform-origin: bottom left;
+}
+
+/* 底部导航栏样式 */
+.navbar.fixed-bottom {
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    padding: 0;
+}
+
+.navbar.fixed-bottom .nav-link {
+    padding: 0.75rem 0.5rem;
+    color: rgba(255, 255, 255, 0.75);
+}
+
+.navbar.fixed-bottom .nav-link.active {
+    color: #fff;
+    position: relative;
+}
+
+.navbar.fixed-bottom .nav-link.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40%;
+    height: 3px;
+    background-color: #fff;
+    border-radius: 3px 3px 0 0;
+}
+
+.navbar.fixed-bottom .fas {
+    font-size: 1.2rem;
 }

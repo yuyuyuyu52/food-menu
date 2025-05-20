@@ -4,8 +4,8 @@
 
 {% block content %}
 <div class="row">
-    <div class="col-md-12">
-        <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-3">
             <h1>点菜菜单</h1>
         </div>
     </div>
@@ -17,10 +17,9 @@
         
         <div class="row">
             <!-- 左侧导航栏 -->
-            <div class="col-md-2">
+            <div class="col-md-3 col-lg-2">
                 <div class="list-group sticky-top" style="top: 20px;">
                     <div class="list-group-item list-group-item-primary">菜品分类</div>
-                    <a href="#all-dishes" class="list-group-item list-group-item-action">全部菜品</a>
                     {% for category in categories %}
                         <a href="#category-{{ category.id }}" class="list-group-item list-group-item-action">{{ category.name }}</a>
                     {% endfor %}
@@ -28,43 +27,7 @@
             </div>
             
             <!-- 右侧菜品展示 -->
-            <div class="col-md-10">
-                <div id="all-dishes" class="mb-4">
-                    <h3 class="border-bottom pb-2">全部菜品</h3>
-                    
-                    <div class="list-group">
-                        {% for dish in dishes %}
-                            <div class="list-group-item list-group-item-action d-flex align-items-center py-3">
-                                <!-- 左侧图片 -->
-                                <div class="me-3" style="width: 80px; height: 80px; overflow: hidden; flex-shrink: 0;">
-                                    {% if dish.image_path %}
-                                        <img src="{{ url_for('static', filename=dish.image_path) }}" alt="{{ dish.name }}" class="img-fluid" style="width: 100%; height: 100%; object-fit: cover;">
-                                    {% else %}
-                                        <div class="bg-light d-flex justify-content-center align-items-center h-100">
-                                            <i class="fas fa-utensils fa-2x text-muted"></i>
-                                        </div>
-                                    {% endif %}
-                                </div>
-                                
-                                <!-- 中间菜品信息 -->
-                                <div class="flex-grow-1">
-                                    <h5 class="mb-1">{{ dish.name }}</h5>
-                                    <span class="badge bg-secondary me-2">{{ dish.category.name }}</span>
-                                    <small class="text-muted">配料: {{ dish.ingredients|length }} 种</small>
-                                </div>
-                                
-                                <!-- 右侧添加按钮 -->
-                                <div class="form-check form-check-inline me-0">
-                                    <input class="form-check-input dish-checkbox" type="checkbox" name="dish_ids" value="{{ dish.id }}" id="dish{{ dish.id }}" style="transform: scale(1.5);">
-                                    <label class="form-check-label ms-2" for="dish{{ dish.id }}">
-                                        <i class="fas fa-plus-circle text-primary" style="font-size: 1.5rem;"></i>
-                                    </label>
-                                </div>
-                            </div>
-                        {% endfor %}
-                    </div>
-                </div>
-                
+            <div class="col-md-9 col-lg-10">
                 <!-- 按分类显示菜品 -->
                 {% for category in categories %}
                     <div id="category-{{ category.id }}" class="mb-4">
@@ -107,16 +70,15 @@
             </div>
         </div>
         
-        <div class="sticky-bottom bg-light py-3 border-top mt-4">
-            <div class="container">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        已选择 <span id="selected-count" class="badge bg-primary">0</span> 个菜品
-                    </div>
-                    <button type="submit" class="btn btn-lg btn-primary">
-                        <i class="fas fa-shopping-cart"></i> 继续下一步
-                    </button>
+        <!-- 底部提交区域 - 紧贴底部导航栏 -->
+        <div class="order-bottom-bar">
+            <div class="d-flex justify-content-between align-items-center py-2 px-3 bg-white border-top shadow-sm">
+                <div>
+                    已选择 <span id="selected-count" class="badge bg-primary">0</span> 个菜品
                 </div>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-shopping-cart"></i> 继续下一步
+                </button>
             </div>
         </div>
     </form>
