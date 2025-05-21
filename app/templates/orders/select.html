@@ -4,18 +4,43 @@
 
 {% block header_title %}点菜{% endblock %}
 
+{% block styles %}
+<style>
+    /* 优化左侧分类导航栏在移动设备上的滚动体验 */
+    :root {
+        --header-height: 52px; /* 根据页面顶部header高度设置 */
+    }
+    
+    @media (max-width: 768px) {
+        .category-nav {
+            -webkit-overflow-scrolling: touch; /* 对iOS设备提供平滑滚动 */
+            scrollbar-width: none; /* 隐藏Firefox滚动条 */
+        }
+        
+        .category-nav::-webkit-scrollbar {
+            display: none; /* 隐藏Chrome/Safari滚动条 */
+        }
+    }
+    
+    /* 确保内容区域不被左侧导航遮挡 */
+    .content-container {
+        padding-top: 0.5rem;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 {% if dishes %}
     <form action="{{ url_for('orders.review') }}" method="post">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
         
         <div class="flex flex-row gap-0">
-            <!-- 左侧分类导航栏 - 像美团/饿了么样式 -->
-            <div class="w-1/4 sm:w-1/5 md:w-1/6 bg-gray-100 h-screen overflow-y-auto sticky top-0 px-0">
-                <div class="py-2">
+            <!-- 左侧分类导航栏 - 像美团/饿了么样式，固定位置 -->
+            <div class="w-1/4 sm:w-1/5 md:w-1/6 bg-gray-100 fixed left-0 top-[var(--header-height)] bottom-16 overflow-y-auto z-10 category-nav">
+                <div class="py-2 pb-4">
                     {% for category in categories %}
                         <a href="#category-{{ category.id }}" 
-                           class="block py-3 px-2 border-l-4 text-center {% if loop.first %}border-blue-500 bg-white text-blue-600{% else %}border-transparent hover:border-blue-300 hover:bg-white text-gray-700 hover:text-blue-500{% endif %} transition duration-150">
+                           class="block py-3 px-2 border-l-4 text-center {% if loop.first %}border-sakura-500 bg-white text-sakura-600{% else %}border-transparent hover:border-sakura-300 hover:bg-white text-gray-700 hover:text-sakura-500{% endif %} transition duration-150">
                             <div class="text-sm">{{ category.name }}</div>
                         </a>
                     {% endfor %}
@@ -23,11 +48,11 @@
             </div>
             
             <!-- 右侧菜品列表 -->
-            <div class="w-3/4 sm:w-4/5 md:w-5/6 overflow-y-auto h-screen bg-white">
-                <div class="p-2 sm:p-4">
+            <div class="w-3/4 sm:w-4/5 md:w-5/6 ml-[25%] sm:ml-[20%] md:ml-[16.7%] bg-white content-container">
+                <div class="p-2 sm:p-4 pb-20">
                     {% for category in categories %}
                         <div id="category-{{ category.id }}" class="mb-6">
-                            <h2 class="text-lg font-semibold text-gray-800 p-2 sticky top-0 bg-gray-100 z-10 rounded-md">{{ category.name }}</h2>
+                            <h2 class="text-lg font-semibold text-gray-800 p-2 sticky top-[var(--header-height)] bg-sakura-50 z-10 rounded-md">{{ category.name }}</h2>
                             
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2">
                                 {% for dish in dishes if dish.category_id == category.id %}
@@ -63,7 +88,7 @@
                                                 <div class="flex justify-between items-center mt-1">
                                                     <div class="flex items-center">
                                                         <input type="checkbox" name="dish_ids" id="dish-{{ dish.id }}" value="{{ dish.id }}" class="form-checkbox">
-                                                        <label for="dish-{{ dish.id }}" class="ml-2 text-sm text-blue-600 cursor-pointer">选择</label>
+                                                        <label for="dish-{{ dish.id }}" class="ml-2 text-sm text-sakura-600 cursor-pointer">选择</label>
                                                     </div>
                                                 </div>
                                             </div>
@@ -78,14 +103,14 @@
         </div>
         
         <!-- 底部提交按钮 - 固定在底部 -->
-        <div class="fixed bottom-16 right-0 left-0 p-3 bg-white shadow-lg border-t z-20">
-            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-md shadow-sm font-medium opacity-70 cursor-not-allowed" disabled>
-                <i class="fas fa-check-circle mr-2"></i> 确认已选菜品 <span id="selected-count" class="inline-block ml-1 px-2 py-0.5 bg-white text-blue-700 rounded-full font-bold">0</span>
+        <div class="fixed bottom-16 right-0 left-0 p-3 bg-white shadow-lg border-t z-40">
+            <button type="submit" class="w-full bg-sakura-500 hover:bg-sakura-600 text-white py-2 rounded-md shadow-sm font-medium opacity-70 cursor-not-allowed" disabled>
+                <i class="fas fa-check-circle mr-2"></i> 确认已选菜品 <span id="selected-count" class="inline-block ml-1 px-2 py-0.5 bg-white text-sakura-700 rounded-full font-bold">0</span>
             </button>
         </div>
     </form>
 {% else %}
-    <div class="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 rounded">
+    <div class="bg-sakura-100 border-l-4 border-sakura-500 text-sakura-700 p-4 rounded">
         <p>暂无菜品可供选择，请先添加菜品。</p>
     </div>
 {% endif %}
@@ -102,49 +127,46 @@
             link.addEventListener('click', function(e) {
                 // 移除所有链接的高亮样式
                 categoryLinks.forEach(l => {
-                    l.classList.remove('border-blue-500', 'bg-white', 'text-blue-600');
+                    l.classList.remove('border-sakura-500', 'bg-white', 'text-sakura-600');
                     l.classList.add('border-transparent', 'text-gray-700');
                 });
                 
                 // 给当前点击的链接添加高亮样式
                 this.classList.remove('border-transparent', 'text-gray-700');
-                this.classList.add('border-blue-500', 'bg-white', 'text-blue-600');
+                this.classList.add('border-sakura-500', 'bg-white', 'text-sakura-600');
             });
         });
         
-        // 滚动时检测当前可见的分类区域
-        const categoryAreas = Array.from(document.querySelectorAll('[id^="category-"]'));
-        const menuContainer = document.querySelector('.w-3\\/4.sm\\:w-4\\/5.md\\:w-5\\/6');
-        
-        if (menuContainer) {
-            menuContainer.addEventListener('scroll', debounce(function() {
-                let currentCategory = null;
-                
-                // 找到当前视图中的第一个分类
-                for (const area of categoryAreas) {
-                    const rect = area.getBoundingClientRect();
-                    if (rect.top <= 100 && rect.bottom > 0) {
-                        currentCategory = area.id;
-                        break;
-                    }
+        // 监听窗口滚动，而不是菜单容器滚动
+        window.addEventListener('scroll', debounce(function() {
+            let currentCategory = null;
+            
+            // 找到当前视图中的第一个分类
+            for (const area of categoryAreas) {
+                const rect = area.getBoundingClientRect();
+                // 调整检测位置，考虑header高度
+                const headerHeight = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--header-height')) || 52;
+                if (rect.top <= headerHeight + 100 && rect.bottom > headerHeight) {
+                    currentCategory = area.id;
+                    break;
                 }
+            }
+            
+            if (currentCategory) {
+                // 移除所有链接的高亮样式
+                categoryLinks.forEach(l => {
+                    l.classList.remove('border-sakura-500', 'bg-white', 'text-sakura-600');
+                    l.classList.add('border-transparent', 'text-gray-700');
+                });
                 
-                if (currentCategory) {
-                    // 移除所有链接的高亮样式
-                    categoryLinks.forEach(l => {
-                        l.classList.remove('border-blue-500', 'bg-white', 'text-blue-600');
-                        l.classList.add('border-transparent', 'text-gray-700');
-                    });
-                    
-                    // 高亮对应的分类链接
-                    const activeLink = document.querySelector(`a[href="#${currentCategory}"]`);
-                    if (activeLink) {
-                        activeLink.classList.remove('border-transparent', 'text-gray-700');
-                        activeLink.classList.add('border-blue-500', 'bg-white', 'text-blue-600');
-                    }
+                // 高亮对应的分类链接
+                const activeLink = document.querySelector(`a[href="#${currentCategory}"]`);
+                if (activeLink) {
+                    activeLink.classList.remove('border-transparent', 'text-gray-700');
+                    activeLink.classList.add('border-sakura-500', 'bg-white', 'text-sakura-600');
                 }
-            }, 100));
-        }
+            }
+        }, 100));
         
         // 更新选中菜品数量
         function updateSelectedCount() {

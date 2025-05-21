@@ -5,7 +5,7 @@
 {% block header_title %}分类{% endblock %}
 
 {% block header_actions %}
-<button type="button" onclick="openCreateCategoryDialog()" class="bg-blue-700 hover:bg-blue-800 text-white py-2 px-4 rounded shadow-sm flex items-center">
+<button type="button" onclick="openCreateCategoryDialog()" class="bg-sakura-600 hover:bg-sakura-700 text-white py-2 px-4 rounded shadow-sm flex items-center">
     <i class="fas fa-plus mr-2"></i> <span class="sm:inline hidden">新建</span><span>分类</span>
 </button>
 {% endblock %}
@@ -30,7 +30,7 @@
                     <div class="flex items-center space-x-2">
                         <!-- 大屏幕显示文字和图标 -->
                         <div class="hidden sm:flex space-x-2">
-                            <a href="{{ url_for('dishes.index', category_id=category.id) }}" class="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded shadow-sm flex items-center">
+                            <a href="{{ url_for('dishes.index', category_id=category.id) }}" class="bg-sakura-500 hover:bg-sakura-600 text-white py-2 px-4 rounded shadow-sm flex items-center">
                                 <i class="fas fa-utensils mr-2"></i> 查看菜品
                             </a>
                             <a href="{{ url_for('categories.edit', id=category.id) }}" class="bg-yellow-500 hover:bg-yellow-600 text-white py-1 px-3 rounded shadow-sm">
@@ -43,7 +43,7 @@
                         
                         <!-- 小屏幕只显示图标 -->
                         <div class="flex sm:hidden space-x-2">
-                            <a href="{{ url_for('dishes.index', category_id=category.id) }}" class="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded shadow-sm">
+                            <a href="{{ url_for('dishes.index', category_id=category.id) }}" class="bg-sakura-500 hover:bg-sakura-600 text-white p-2 rounded shadow-sm">
                                 <i class="fas fa-utensils"></i>
                             </a>
                             <a href="{{ url_for('categories.edit', id=category.id) }}" class="bg-yellow-500 hover:bg-yellow-600 text-white p-2 rounded shadow-sm">

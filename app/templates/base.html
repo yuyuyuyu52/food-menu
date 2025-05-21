@@ -10,6 +10,25 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              // 樱花粉色系列
+              sakura: {
+                50: '#fef6fa',
+                100: '#fde8f3',
+                200: '#fbd0e5',
+                300: '#f8b0d3',
+                400: '#f57eb7',
+                500: '#f25a9e',
+                600: '#de2b7c',
+                700: '#c0185f',
+                800: '#a01950',
+                900: '#841946'
+              }
+            }
+          }
+        },
         plugins: [
           function({ addVariant, addComponents, addBase, theme }) {
             // 添加表单控件样式
@@ -26,7 +45,7 @@
                 'userSelect': 'none',
                 'height': '1.25rem',
                 'width': '1.25rem',
-                'color': '#3b82f6',
+                'color': '#f25a9e',
                 'cursor': 'pointer',
                 'backgroundOrigin': 'border-box',
                 'backgroundRepeat': 'no-repeat',
@@ -62,7 +81,7 @@
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col">
     <!-- 顶部应用栏 -->
-    <header class="bg-blue-600 text-white shadow-md">
+    <header class="bg-sakura-500 text-white shadow-md">
         <div class="container mx-auto px-4 py-3 flex justify-between items-center">
             <h1 class="text-xl font-bold">{% block header_title %}食品菜单{% endblock %}</h1>
             <div class="header-actions">
@@ -99,28 +118,28 @@
     </main>
 
     <!-- 页脚 -->
-    <footer class="bg-gray-200 py-3 text-center text-gray-600 mt-auto">
+    <footer class="bg-sakura-50 py-3 text-center text-sakura-500 mt-auto">
         <div class="container mx-auto">
-            <span>© {{ g.now.year }} 食品菜单应用</span>
+            <span>小卷 ❤️ 小鱼</span>
         </div>
     </footer>
     
     <!-- 底部导航栏 -->
-    <nav class="fixed bottom-0 left-0 right-0 bg-blue-600 text-white shadow-lg">
+    <nav class="fixed bottom-0 left-0 right-0 bg-sakura-500 text-white shadow-lg z-50">
         <div class="flex justify-around">
-            <a href="{{ url_for('categories.index') }}" class="flex flex-col items-center py-2 px-3 {% if request.endpoint and request.endpoint.startswith('categories') %}bg-blue-700{% endif %} hover:bg-blue-700">
+            <a href="{{ url_for('categories.index') }}" class="flex flex-col items-center py-2 px-3 {% if request.endpoint and request.endpoint.startswith('categories') %}bg-sakura-600{% endif %} hover:bg-sakura-600">
                 <i class="fas fa-th-list text-xl"></i>
                 <span class="text-xs mt-1">分类</span>
             </a>
-            <a href="{{ url_for('dishes.index') }}" class="flex flex-col items-center py-2 px-3 {% if request.endpoint and request.endpoint.startswith('dishes') %}bg-blue-700{% endif %} hover:bg-blue-700">
+            <a href="{{ url_for('dishes.index') }}" class="flex flex-col items-center py-2 px-3 {% if request.endpoint and request.endpoint.startswith('dishes') %}bg-sakura-600{% endif %} hover:bg-sakura-600">
                 <i class="fas fa-utensils text-xl"></i>
                 <span class="text-xs mt-1">菜品</span>
             </a>
-            <a href="{{ url_for('orders.select') }}" class="flex flex-col items-center py-2 px-3 {% if request.endpoint and request.endpoint == 'orders.select' %}bg-blue-700{% endif %} hover:bg-blue-700">
+            <a href="{{ url_for('orders.select') }}" class="flex flex-col items-center py-2 px-3 {% if request.endpoint and request.endpoint == 'orders.select' %}bg-sakura-600{% endif %} hover:bg-sakura-600">
                 <i class="fas fa-shopping-cart text-xl"></i>
                 <span class="text-xs mt-1">点菜</span>
             </a>
-            <a href="{{ url_for('orders.history') }}" class="flex flex-col items-center py-2 px-3 {% if request.endpoint and request.endpoint == 'orders.history' %}bg-blue-700{% endif %} hover:bg-blue-700">
+            <a href="{{ url_for('orders.history') }}" class="flex flex-col items-center py-2 px-3 {% if request.endpoint and request.endpoint == 'orders.history' %}bg-sakura-600{% endif %} hover:bg-sakura-600">
                 <i class="fas fa-receipt text-xl"></i>
                 <span class="text-xs mt-1">订单</span>
             </a>
@@ -133,6 +152,7 @@
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     <script src="{{ url_for('static', filename='js/lazyload.js') }}"></script>
     <script src="{{ url_for('static', filename='js/mobile-enhance.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/header-calc.js') }}"></script>
     {% block scripts %}{% endblock %}
 </body>
 </html>

@@ -22,7 +22,7 @@ class DishForm(FlaskForm):
         FileAllowed(['jpg', 'jpeg', 'png', 'gif'], '只允许上传图片!')
     ])
     category_id = SelectField('分类', coerce=int, validators=[DataRequired()])
-    recipe = TextAreaField('烹饪方法', validators=[DataRequired()])
+    recipe = TextAreaField('烹饪方法', validators=[Optional()])
     ingredients_data = HiddenField('配料数据')
     save_button = SubmitField('保存')  # 重命名submit为save_button，避免与表单submit方法冲突
 

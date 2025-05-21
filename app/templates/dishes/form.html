@@ -11,7 +11,7 @@
         max-height: 300px;
         overflow-y: auto;
         scrollbar-width: thin;
-        scrollbar-color: rgba(59, 130, 246, 0.5) rgba(243, 244, 246, 0.7);
+        scrollbar-color: rgba(242, 90, 158, 0.5) rgba(243, 244, 246, 0.7);
         border-radius: 0.5rem;
     }
     
@@ -25,7 +25,7 @@
     }
     
     .ingredients-container::-webkit-scrollbar-thumb {
-        background: rgba(59, 130, 246, 0.5);
+        background: rgba(242, 90, 158, 0.5);
         border-radius: 6px;
     }
     
@@ -163,8 +163,8 @@
         }
         
         .form-control:focus {
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.5);
+            border-color: #f25a9e;
+            box-shadow: 0 0 0 1px rgba(242, 90, 158, 0.5);
         }
         
         /* 移动端表单分组 */
@@ -215,8 +215,8 @@
         }
         
         .custom-file-upload:hover {
-            border-color: #3b82f6;
-            background-color: rgba(59, 130, 246, 0.05);
+            border-color: #f25a9e;
+            background-color: rgba(242, 90, 158, 0.05);
         }
         
         /* 关闭按钮美化 */
@@ -242,7 +242,7 @@
 {% block content %}
 <div class="max-w-4xl mx-auto">
     <div class="bg-white rounded-lg shadow-md overflow-hidden">
-        <div class="bg-blue-600 text-white p-4">
+        <div class="bg-sakura-500 text-white p-4">
             <h2 class="text-xl font-semibold">{{ title }}</h2>
         </div>
         <div class="p-4 sm:p-6">
@@ -255,7 +255,7 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="form-field">
                             <label for="name" class="block text-gray-700 font-medium mb-2">{{ form.name.label.text }}</label>
-                            {{ form.name(class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 transition duration-150" + (" border-red-500" if form.name.errors else "")) }}
+                            {{ form.name(class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-sakura-400 focus:ring focus:ring-sakura-200 focus:ring-opacity-50 transition duration-150" + (" border-red-500" if form.name.errors else "")) }}
                             {% if form.name.errors %}
                                 <div class="text-red-500 text-sm mt-1">
                                     {% for error in form.name.errors %}
@@ -267,7 +267,7 @@
                         
                         <div class="form-field">
                             <label for="category_id" class="block text-gray-700 font-medium mb-2">{{ form.category_id.label.text }}</label>
-                            {{ form.category_id(class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 transition duration-150" + (" border-red-500" if form.category_id.errors else "")) }}
+                            {{ form.category_id(class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-sakura-400 focus:ring focus:ring-sakura-200 focus:ring-opacity-50 transition duration-150" + (" border-red-500" if form.category_id.errors else "")) }}
                             {% if form.category_id.errors %}
                                 <div class="text-red-500 text-sm mt-1">
                                     {% for error in form.category_id.errors %}
@@ -281,10 +281,10 @@
                     <!-- 图片上传 -->
                     <div class="form-field">
                         <label class="block text-gray-700 font-medium mb-2">{{ form.image.label.text }}</label>
-                        <div class="custom-file-upload rounded-lg border-2 border-dashed border-gray-300 hover:border-blue-500 cursor-pointer transition-colors duration-200 bg-gray-50 hover:bg-gray-100 relative">
+                        <div class="custom-file-upload rounded-lg border-2 border-dashed border-sakura-200 hover:border-sakura-400 cursor-pointer transition-colors duration-200 bg-sakura-50 hover:bg-sakura-100 relative">
                             <input type="file" name="image" id="image" accept="image/*" class="hidden" />
                             <label for="image" class="cursor-pointer w-full p-6 flex flex-col items-center justify-center transition duration-150">
-                                <i class="fas fa-cloud-upload-alt text-blue-500 text-4xl mb-2"></i>
+                                <i class="fas fa-cloud-upload-alt text-sakura-500 text-4xl mb-2"></i>
                                 <span class="text-gray-700">点击或拖拽上传图片</span>
                                 <span class="text-gray-500 text-sm mt-1">支持JPG、PNG格式</span>
                             </label>
@@ -308,11 +308,11 @@
                     <div class="form-field">
                         <div class="flex justify-between items-center mb-3">
                             <label class="block text-gray-700 font-medium">配料</label>
-                            <button type="button" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-full flex items-center shadow-sm transition duration-150 touch-btn" id="addIngredient">
+                            <button type="button" class="bg-sakura-500 hover:bg-sakura-600 text-white px-4 py-2 rounded-full flex items-center shadow-sm transition duration-150 touch-btn" id="addIngredient">
                                 <i class="fas fa-plus mr-2"></i> 添加配料
                             </button>
                         </div>
-                        <div class="bg-gray-50 rounded-lg shadow-inner overflow-hidden">
+                        <div class="bg-sakura-50 rounded-lg shadow-inner overflow-hidden">
                             <div class="p-4 ingredients-container">
                                 <div id="ingredientsList" class="space-y-3">
                                     <!-- 动态添加的配料将在这里 -->
@@ -323,8 +323,8 @@
                     
                     <!-- 烹饪步骤 -->
                     <div class="form-field">
-                        <label for="recipe" class="block text-gray-700 font-medium mb-2">{{ form.recipe.label.text }}</label>
-                        {{ form.recipe(class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 transition duration-150" + (" border-red-500" if form.recipe.errors else ""), rows=8) }}
+                        <label for="recipe" class="block text-gray-700 font-medium mb-2">{{ form.recipe.label.text }} <span class="text-xs text-sakura-400">(选填)</span></label>
+                        {{ form.recipe(class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-sakura-400 focus:ring focus:ring-sakura-200 focus:ring-opacity-50 transition duration-150" + (" border-red-500" if form.recipe.errors else ""), rows=8) }}
                         {% if form.recipe.errors %}
                             <div class="text-red-500 text-sm mt-1">
                                 {% for error in form.recipe.errors %}
@@ -336,10 +336,10 @@
                     
                     <!-- 提交按钮 -->
                     <div class="flex flex-col sm:flex-row justify-between gap-3 pt-2">
-                        <a href="{{ url_for('dishes.index') }}" class="order-2 sm:order-1 w-full sm:w-auto px-5 py-3 bg-gray-300 hover:bg-gray-400 text-gray-800 font-medium rounded-lg flex items-center justify-center transition duration-150 shadow-sm touch-btn">
+                        <a href="{{ url_for('dishes.index') }}" class="order-2 sm:order-1 w-full sm:w-auto px-5 py-3 bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium rounded-lg flex items-center justify-center transition duration-150 shadow-sm touch-btn">
                             <i class="fas fa-arrow-left mr-2"></i> 取消
                         </a>
-                        {{ form.save_button(class="order-1 sm:order-2 w-full sm:w-auto px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg flex items-center justify-center transition duration-150 shadow-sm touch-btn") }}
+                        {{ form.save_button(class="order-1 sm:order-2 w-full sm:w-auto px-5 py-3 bg-sakura-500 hover:bg-sakura-600 text-white font-medium rounded-lg flex items-center justify-center transition duration-150 shadow-sm touch-btn") }}
                     </div>
                 </div>
             </form>
@@ -542,11 +542,11 @@
                 ingredientItem.innerHTML = `
                     <div class="sm:flex space-y-2 sm:space-y-0 sm:space-x-3 sm:items-center">
                         <div class="flex-grow">
-                            <input type="text" class="w-full px-4 py-2 rounded-md border border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 ingredient-name" placeholder="配料名称" value="${ingredient.name || ''}" data-index="${index}">
+                            <input type="text" class="w-full px-4 py-2 rounded-md border border-gray-300 focus:border-sakura-400 focus:ring focus:ring-sakura-200 focus:ring-opacity-50 ingredient-name" placeholder="配料名称" value="${ingredient.name || ''}" data-index="${index}">
                         </div>
                         <div class="flex-grow-0 flex items-center">
-                            <input type="text" class="w-full px-4 py-2 rounded-md border border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 ingredient-amount" placeholder="数量" value="${ingredient.amount || ''}" data-index="${index}">
-                            <button type="button" class="ml-2 bg-red-100 hover:bg-red-200 text-red-600 rounded-full w-8 h-8 flex items-center justify-center transition duration-150 remove-ingredient" data-index="${index}">
+                            <input type="text" class="w-full px-4 py-2 rounded-md border border-gray-300 focus:border-sakura-400 focus:ring focus:ring-sakura-200 focus:ring-opacity-50 ingredient-amount" placeholder="数量" value="${ingredient.amount || ''}" data-index="${index}">
+                            <button type="button" class="ml-2 bg-sakura-100 hover:bg-sakura-200 text-sakura-600 rounded-full w-8 h-8 flex items-center justify-center transition duration-150 remove-ingredient" data-index="${index}">
                                 <i class="fas fa-times"></i>
                             </button>
                         </div>

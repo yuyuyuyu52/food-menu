@@ -5,7 +5,7 @@
 {% block header_title %}菜品{% endblock %}
 
 {% block header_actions %}
-<a href="{{ url_for('dishes.create') }}" class="bg-blue-700 hover:bg-blue-800 text-white py-2 px-4 rounded shadow-sm flex items-center">
+<a href="{{ url_for('dishes.create') }}" class="bg-sakura-600 hover:bg-sakura-700 text-white py-2 px-4 rounded shadow-sm flex items-center">
     <i class="fas fa-plus mr-2"></i> 新建菜品
 </a>
 {% endblock %}
@@ -36,7 +36,7 @@
                             </div>
                             
                             <!-- 菜品信息 - 整个区域可点击进入详情页 -->
-                            <a href="{{ url_for('dishes.view', id=dish.id) }}" class="flex-grow block hover:bg-blue-50 transition duration-150">
+                            <a href="{{ url_for('dishes.view', id=dish.id) }}" class="flex-grow block hover:bg-sakura-50 transition duration-150">
                                 <div class="flex flex-col">
                                     <h2 class="text-xl font-medium text-gray-900 mb-1">{{ dish.name }}</h2>
                                     <div class="flex flex-wrap items-center">
