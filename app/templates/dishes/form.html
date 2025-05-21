@@ -323,8 +323,11 @@
                         let width = img.width;
                         let height = img.height;
                         
-                        // 限制最大尺寸
-                        const maxSize = 1200;
+                        // 检测设备类型，在手机端进一步减小尺寸
+                        const isMobile = window.innerWidth < 768;
+                        // 手机端最大尺寸降低为800px，电脑端保持1000px
+                        const maxSize = isMobile ? 800 : 1000;
+                        
                         if (width > maxSize || height > maxSize) {
                             if (width > height) {
                                 height = Math.floor(height * (maxSize / width));
@@ -342,6 +345,9 @@
                         const ctx = canvas.getContext('2d');
                         ctx.drawImage(img, 0, 0, width, height);
                         
+                        // 根据设备调整质量
+                        const quality = isMobile ? 0.6 : 0.7;
+                        
                         // 转换为Blob
                         canvas.toBlob(
                             function(blob) {
@@ -358,7 +364,7 @@
                                 resolve(compressedFile);
                             },
                             'image/jpeg',
-                            0.75 // 质量调低以减小文件大小
+                            quality // 手机端使用更低的质量设置
                         );
                     };
                     

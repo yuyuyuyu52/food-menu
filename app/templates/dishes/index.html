@@ -17,17 +17,17 @@
             {% for dish in dishes %}
                 <div class="p-4 border-b last:border-b-0">
                     <div class="flex justify-between items-start">
-                        <!-- 添加图片显示 -->
+                        <!-- 添加图片显示 - 优化版本 -->
                         <div class="flex flex-grow">
                             <div class="w-20 h-20 sm:w-24 sm:h-24 flex-shrink-0 rounded overflow-hidden mr-3 bg-gray-100">
                                 {% if dish.image_path %}
                                     {% set image_path = dish.image_path %}
                                     {% set thumb_path = image_path.replace(image_path.split('/')[-1], 'thumb_' + image_path.split('/')[-1]) %}
                                     <img 
-                                        src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'%3E%3C/svg%3E" 
-                                        data-src="{{ url_for('static', filename=thumb_path) }}" 
+                                        src="{{ url_for('static', filename=thumb_path) }}" 
                                         alt="{{ dish.name }}" 
-                                        class="lazy-image w-full h-full object-cover">
+                                        class="lazy-image w-full h-full object-cover"
+                                        onerror="this.onerror=null; this.parentNode.innerHTML='<div class=\'w-full h-full flex items-center justify-center\'><i class=\'fas fa-utensils text-gray-400 text-2xl\'></i></div>';">
                                 {% else %}
                                     <div class="w-full h-full flex items-center justify-center">
                                         <i class="fas fa-utensils text-gray-400 text-2xl"></i>
@@ -79,6 +79,28 @@
 {% block scripts %}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        console.log('文档加载完成，初始化功能...');
+        
+        // 检查图片加载错误
+        function checkImageErrors() {
+            const images = document.querySelectorAll('.lazy-image');
+            console.log(`检查 ${images.length} 张图片加载状态`);
+            
+            images.forEach(img => {
+                // 如果图片已经加载失败或没有合法src，尝试加载
+                if (img.naturalWidth === 0 || !img.src || img.src === 'data:,') {
+                    console.warn('发现未加载的图片，尝试加载:', img.dataset.src || '未知路径');
+                    
+                    if (img.dataset.src) {
+                        img.src = img.dataset.src;
+                    }
+                }
+            });
+        }
+        
+        // 10秒后检查图片
+        setTimeout(checkImageErrors, 10000);
+        
         // 添加行点击事件，整行可点击
         document.querySelectorAll('.p-4').forEach(item => {
             const linkElem = item.querySelector('a.flex-grow');
@@ -102,42 +124,82 @@
         });
         
         // 图片懒加载功能
-        if ('IntersectionObserver' in window) {
+        function loadImages() {
+            console.log('开始加载图片...');
             const lazyImages = document.querySelectorAll('.lazy-image');
+            console.log(`找到 ${lazyImages.length} 张需要懒加载的图片`);
             
-            const imageObserver = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        const image = entry.target;
-                        
-                        // 开始加载图片
-                        const tempImage = new Image();
-                        tempImage.onload = function() {
+            if ('IntersectionObserver' in window) {
+                const imageObserver = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            const image = entry.target;
+                            
+                            // 确保有data-src属性
+                            if (!image.dataset.src) {
+                                console.warn('图片没有data-src属性:', image);
+                                return;
+                            }
+                            
+                            console.log('加载图片:', image.dataset.src);
+                            
+                            // 先直接设置src来立即显示
                             image.src = image.dataset.src;
                             image.style.opacity = '1';
                             
-                            // 一旦加载完成，不再需要观察
+                            // 完成后停止观察
                             imageObserver.unobserve(image);
-                        };
-                        tempImage.src = image.dataset.src;
+                        }
+                    });
+                }, {
+                    rootMargin: '200px 0px', // 增加预加载距离
+                    threshold: 0.01
+                });
+                
+                // 对所有懒加载图片进行观察
+                lazyImages.forEach(image => {
+                    imageObserver.observe(image);
+                });
+            } else {
+                // 回退方案：如果不支持IntersectionObserver，直接加载所有图片
+                lazyImages.forEach(image => {
+                    if (image.dataset.src) {
+                        image.src = image.dataset.src;
+                        image.style.opacity = '1';
                     }
                 });
-            }, {
-                rootMargin: '100px 0px', // 提前100px加载
-                threshold: 0.01
-            });
-            
-            // 对所有懒加载图片进行观察
-            lazyImages.forEach(image => {
-                imageObserver.observe(image);
-            });
-        } else {
-            // 回退方案：如果不支持IntersectionObserver，直接加载所有图片
-            document.querySelectorAll('.lazy-image').forEach(image => {
-                image.src = image.dataset.src;
-                image.style.opacity = '1';
-            });
+            }
         }
+        
+        // 确保在DOM完全加载后执行，并在3秒后重试一次以防万一
+        loadImages();
+        setTimeout(loadImages, 3000); // 3秒后重试加载未加载的图片
     });
 </script>
+{% endblock %}
+
+{% block styles %}
+<style>
+    /* 图片加载优化 */
+    .lazy-image {
+        transition: opacity 0.3s ease;
+        animation: pulse 1.5s ease-in-out 0.5s infinite alternate;
+    }
+    
+    @keyframes pulse {
+        0% {
+            opacity: 0.8;
+        }
+        100% {
+            opacity: 1;
+        }
+    }
+    
+    /* 移动设备图片优化 */
+    @media (max-width: 640px) {
+        .lazy-image {
+            min-height: 80px;
+        }
+    }
+</style>
 {% endblock %}
