@@ -20,6 +20,22 @@
         top: 0;
         height: 100%;
     }
+    .compress-loading {
+        transition: opacity 0.5s ease;
+    }
+    @keyframes fadeInOut {
+        0% { opacity: 0; }
+        20% { opacity: 1; }
+        80% { opacity: 1; }
+        100% { opacity: 0; }
+    }
+    .compression-toast {
+        animation: fadeInOut 3s ease forwards;
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+    }
 </style>
 {% endblock %}
 
@@ -128,6 +144,7 @@
         const addIngredientBtn = document.getElementById('addIngredient');
         const ingredientsData = document.getElementById('ingredients_data');
         const dishForm = document.getElementById('dishForm');
+        const imageInput = document.querySelector('input[type="file"]');
         
         // 存储配料列表
         let ingredients = [];
@@ -147,6 +164,52 @@
             ingredients.push({ name: '', amount: '' });
             renderIngredients();
         });
+        
+        // 图片上传前压缩处理
+        if (imageInput) {
+            imageInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                // 只处理图片文件
+                if (!file.type.match(/image.*/)) return;
+                
+                // 如果图片小于1MB，不进行压缩
+                if (file.size < 1024 * 1024) return;
+                
+                // 显示加载提示
+                const formGroup = imageInput.closest('.mb-3');
+                let loadingMsg = formGroup.querySelector('.compress-loading');
+                if (!loadingMsg) {
+                    loadingMsg = document.createElement('div');
+                    loadingMsg.className = 'compress-loading text-muted mt-2';
+                    loadingMsg.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> 正在压缩图片，请稍候...';
+                    formGroup.appendChild(loadingMsg);
+                }
+                
+                // 压缩图片
+                compressImage(file).then(compressedFile => {
+                    // 替换原文件
+                    const dataTransfer = new DataTransfer();
+                    dataTransfer.items.add(compressedFile);
+                    imageInput.files = dataTransfer.files;
+                    
+                    // 更新提示
+                    loadingMsg.innerHTML = `
+                        <span class="text-success"><i class="fas fa-check-circle mr-1"></i> 图片已压缩</span>
+                        <small class="ml-2">原始大小: ${Math.round(file.size / 1024)}KB, 压缩后: ${Math.round(compressedFile.size / 1024)}KB</small>
+                    `;
+                    setTimeout(() => {
+                        loadingMsg.style.opacity = '0';
+                        setTimeout(() => loadingMsg.remove(), 500);
+                    }, 3000);
+                    
+                }).catch(error => {
+                    console.error('图片压缩失败:', error);
+                    if (loadingMsg) loadingMsg.remove();
+                });
+            });
+        }
         
         // 修复的表单提交处理逻辑 - 简化版本
         dishForm.addEventListener('submit', function(e) {
@@ -244,6 +307,74 @@
                     ingredients[index].amount = amountInputs[i].value;
                 }
             }
+        }
+        
+        // 浏览器端图片压缩
+        function compressImage(file) {
+            return new Promise((resolve, reject) => {
+                console.time('客户端图片压缩');
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = new Image();
+                    img.onload = function() {
+                        // 准备画布
+                        const canvas = document.createElement('canvas');
+                        let width = img.width;
+                        let height = img.height;
+                        
+                        // 限制最大尺寸
+                        const maxSize = 1200;
+                        if (width > maxSize || height > maxSize) {
+                            if (width > height) {
+                                height = Math.floor(height * (maxSize / width));
+                                width = maxSize;
+                            } else {
+                                width = Math.floor(width * (maxSize / height));
+                                height = maxSize;
+                            }
+                        }
+                        
+                        canvas.width = width;
+                        canvas.height = height;
+                        
+                        // 绘制图像
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+                        
+                        // 转换为Blob
+                        canvas.toBlob(
+                            function(blob) {
+                                // 创建新文件对象
+                                const compressedFile = new File([blob], file.name, {
+                                    type: 'image/jpeg',
+                                    lastModified: Date.now()
+                                });
+                                
+                                console.log('原始大小:', Math.round(file.size / 1024), 'KB');
+                                console.log('压缩后大小:', Math.round(compressedFile.size / 1024), 'KB');
+                                console.timeEnd('客户端图片压缩');
+                                
+                                resolve(compressedFile);
+                            },
+                            'image/jpeg',
+                            0.75 // 质量调低以减小文件大小
+                        );
+                    };
+                    
+                    img.onerror = function() {
+                        reject(new Error('图片加载失败'));
+                    };
+                    
+                    img.src = e.target.result;
+                };
+                
+                reader.onerror = function() {
+                    reject(new Error('文件读取失败'));
+                };
+                
+                reader.readAsDataURL(file);
+            });
         }
         
         // 如果没有配料，添加一个空的
