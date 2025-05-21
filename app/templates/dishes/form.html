@@ -6,29 +6,66 @@
 
 {% block styles %}
 <style>
+    /* 基本样式 */
     .ingredients-container {
         max-height: 300px;
         overflow-y: auto;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(59, 130, 246, 0.5) rgba(243, 244, 246, 0.7);
+        border-radius: 0.5rem;
     }
+    
+    .ingredients-container::-webkit-scrollbar {
+        width: 6px;
+    }
+    
+    .ingredients-container::-webkit-scrollbar-track {
+        background: rgba(243, 244, 246, 0.7);
+        border-radius: 6px;
+    }
+    
+    .ingredients-container::-webkit-scrollbar-thumb {
+        background: rgba(59, 130, 246, 0.5);
+        border-radius: 6px;
+    }
+    
+    /* 配料项动效 */
     .ingredient-item {
-        position: relative;
-        padding-right: 40px;
+        transition: all 0.3s ease;
     }
-    .remove-ingredient {
-        position: absolute;
-        right: 0;
-        top: 0;
-        height: 100%;
+    
+    .ingredient-item:last-child {
+        margin-bottom: 0 !important;
     }
+    
+    /* 新增配料时的动画 */
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .ingredient-item-new {
+        animation: slideIn 0.3s ease-out forwards;
+    }
+    
+    /* 图片压缩反馈 */
     .compress-loading {
         transition: opacity 0.5s ease;
     }
+    
     @keyframes fadeInOut {
         0% { opacity: 0; }
         20% { opacity: 1; }
         80% { opacity: 1; }
         100% { opacity: 0; }
     }
+    
     .compression-toast {
         animation: fadeInOut 3s ease forwards;
         position: fixed;
@@ -36,38 +73,203 @@
         right: 20px;
         z-index: 9999;
     }
+    
+    /* 表单字段交互效果 */
+    .form-field {
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    
+    .form-field:focus-within {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+    
+    /* 表单卡片样式 */
+    .form-card {
+        background: #fff;
+        border-radius: 1rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+    
+    /* 触摸优化按钮 */
+    .touch-btn {
+        min-height: 44px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .touch-btn::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 5px;
+        height: 5px;
+        background: rgba(255, 255, 255, 0.5);
+        opacity: 0;
+        border-radius: 100%;
+        transform: scale(1) translate(-50%, -50%);
+        transform-origin: 50% 50%;
+    }
+    
+    .touch-btn:active::after {
+        opacity: 1;
+        transform: scale(20) translate(-50%, -50%);
+        transition: transform 0.6s, opacity 0.6s;
+    }
+    
+    /* 图片预览区域 */
+    .image-preview {
+        position: relative;
+        width: 100%;
+        border-radius: 0.5rem;
+        overflow: hidden;
+        background-color: #f3f4f6;
+        margin-top: 0.5rem;
+    }
+    
+    .image-preview img {
+        width: 100%;
+        height: auto;
+        max-height: 200px;
+        object-fit: cover;
+        transition: all 0.3s ease;
+    }
+    
+    /* 移动端表单布局优化 */
+    @media (max-width: 640px) {
+        /* 卡片化表单 */
+        .form-card {
+            border-radius: 1rem;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1.5rem;
+        }
+        
+        /* 表单元素样式 */
+        .form-label {
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #111827;
+        }
+        
+        .form-control {
+            font-size: 16px; /* 避免iOS缩放 */
+            padding: 14px 16px;
+            border-radius: 0.5rem;
+            border: 1px solid #d1d5db;
+        }
+        
+        .form-control:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.5);
+        }
+        
+        /* 移动端表单分组 */
+        .form-section {
+            margin-bottom: 24px;
+            padding: 16px;
+            background-color: #fff;
+            border-radius: 1rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        /* 按钮增强 */
+        .form-btn {
+            border-radius: 0.5rem;
+            padding: 12px 20px;
+            font-weight: 500;
+            min-height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            width: 100%;
+        }
+        
+        /* 页面整体padding优化 */
+        .mobile-form-container {
+            padding: 0.5rem;
+        }
+        
+        /* 增大可触摸区域 */
+        .touch-area {
+            padding: 8px;
+        }
+        
+        /* 图片上传按钮美化 */
+        .custom-file-upload {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1.2rem;
+            background-color: #f3f4f6;
+            border: 2px dashed #d1d5db;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 1.5rem;
+        }
+        
+        .custom-file-upload:hover {
+            border-color: #3b82f6;
+            background-color: rgba(59, 130, 246, 0.05);
+        }
+        
+        /* 关闭按钮美化 */
+        .delete-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(239, 68, 68, 0.1);
+            color: rgb(239, 68, 68);
+            transition: all 0.2s ease;
+        }
+        
+        .delete-btn:hover, .delete-btn:active {
+            background-color: rgba(239, 68, 68, 0.2);
+        }
+    }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-10 mx-auto">
-        <div class="card">
-            <div class="card-header bg-primary text-white">
-                <h2 class="card-title mb-0">{{ title }}</h2>
-            </div>
-            <div class="card-body">
-                <form method="post" enctype="multipart/form-data" novalidate id="dishForm">
-                    {{ form.csrf_token }}
-                    {{ form.ingredients_data }}
+<div class="max-w-4xl mx-auto">
+    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+        <div class="bg-blue-600 text-white p-4">
+            <h2 class="text-xl font-semibold">{{ title }}</h2>
+        </div>
+        <div class="p-4 sm:p-6">
+            <form method="post" enctype="multipart/form-data" novalidate id="dishForm" class="space-y-6">
+                {{ form.csrf_token }}
+                {{ form.ingredients_data }}
                     
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            {{ form.name.label(class="form-label") }}
-                            {{ form.name(class="form-control" + (" is-invalid" if form.name.errors else "")) }}
+                <div class="space-y-6">
+                    <!-- 菜品名称和分类 -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="form-field">
+                            <label for="name" class="block text-gray-700 font-medium mb-2">{{ form.name.label.text }}</label>
+                            {{ form.name(class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 transition duration-150" + (" border-red-500" if form.name.errors else "")) }}
                             {% if form.name.errors %}
-                                <div class="invalid-feedback">
+                                <div class="text-red-500 text-sm mt-1">
                                     {% for error in form.name.errors %}
                                         {{ error }}
                                     {% endfor %}
                                 </div>
                             {% endif %}
                         </div>
-                        <div class="col-md-6">
-                            {{ form.category_id.label(class="form-label") }}
-                            {{ form.category_id(class="form-select" + (" is-invalid" if form.category_id.errors else "")) }}
+                        
+                        <div class="form-field">
+                            <label for="category_id" class="block text-gray-700 font-medium mb-2">{{ form.category_id.label.text }}</label>
+                            {{ form.category_id(class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 transition duration-150" + (" border-red-500" if form.category_id.errors else "")) }}
                             {% if form.category_id.errors %}
-                                <div class="invalid-feedback">
+                                <div class="text-red-500 text-sm mt-1">
                                     {% for error in form.category_id.errors %}
                                         {{ error }}
                                     {% endfor %}
@@ -76,48 +278,55 @@
                         </div>
                     </div>
                     
-                    <div class="mb-3">
-                        {{ form.image.label(class="form-label") }}
-                        {{ form.image(class="form-control" + (" is-invalid" if form.image.errors else "")) }}
+                    <!-- 图片上传 -->
+                    <div class="form-field">
+                        <label class="block text-gray-700 font-medium mb-2">{{ form.image.label.text }}</label>
+                        <div class="custom-file-upload rounded-lg border-2 border-dashed border-gray-300 hover:border-blue-500 cursor-pointer transition-colors duration-200 bg-gray-50 hover:bg-gray-100 relative">
+                            <input type="file" name="image" id="image" accept="image/*" class="hidden" />
+                            <label for="image" class="cursor-pointer w-full p-6 flex flex-col items-center justify-center transition duration-150">
+                                <i class="fas fa-cloud-upload-alt text-blue-500 text-4xl mb-2"></i>
+                                <span class="text-gray-700">点击或拖拽上传图片</span>
+                                <span class="text-gray-500 text-sm mt-1">支持JPG、PNG格式</span>
+                            </label>
+                        </div>
                         {% if form.image.errors %}
-                            <div class="invalid-feedback">
+                            <div class="text-red-500 text-sm mt-1">
                                 {% for error in form.image.errors %}
                                     {{ error }}
                                 {% endfor %}
                             </div>
                         {% endif %}
                         {% if dish and dish.image_path %}
-                            <div class="mt-2">
-                                <p>当前图片:</p>
-                                <img src="{{ url_for('static', filename=dish.image_path) }}" alt="{{ dish.name }}" class="img-thumbnail" style="max-height: 150px;">
+                            <div class="mt-3 bg-gray-100 rounded-lg overflow-hidden p-2">
+                                <p class="mb-2 text-sm text-gray-600 font-medium">当前图片:</p>
+                                <img src="{{ url_for('static', filename=dish.image_path) }}" alt="{{ dish.name }}" class="w-full max-h-48 object-contain rounded">
                             </div>
                         {% endif %}
                     </div>
                     
-                    <div class="mb-3">
-                        <label class="form-label">配料</label>
-                        <div class="card">
-                            <div class="card-header">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <span>配料列表</span>
-                                    <button type="button" class="btn btn-sm btn-primary" id="addIngredient">
-                                        <i class="fas fa-plus"></i> 添加配料
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="card-body ingredients-container">
-                                <div id="ingredientsList" class="row g-3">
+                    <!-- 配料 -->
+                    <div class="form-field">
+                        <div class="flex justify-between items-center mb-3">
+                            <label class="block text-gray-700 font-medium">配料</label>
+                            <button type="button" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-full flex items-center shadow-sm transition duration-150 touch-btn" id="addIngredient">
+                                <i class="fas fa-plus mr-2"></i> 添加配料
+                            </button>
+                        </div>
+                        <div class="bg-gray-50 rounded-lg shadow-inner overflow-hidden">
+                            <div class="p-4 ingredients-container">
+                                <div id="ingredientsList" class="space-y-3">
                                     <!-- 动态添加的配料将在这里 -->
                                 </div>
                             </div>
                         </div>
                     </div>
                     
-                    <div class="mb-3">
-                        {{ form.recipe.label(class="form-label") }}
-                        {{ form.recipe(class="form-control" + (" is-invalid" if form.recipe.errors else ""), rows=6) }}
+                    <!-- 烹饪步骤 -->
+                    <div class="form-field">
+                        <label for="recipe" class="block text-gray-700 font-medium mb-2">{{ form.recipe.label.text }}</label>
+                        {{ form.recipe(class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 transition duration-150" + (" border-red-500" if form.recipe.errors else ""), rows=8) }}
                         {% if form.recipe.errors %}
-                            <div class="invalid-feedback">
+                            <div class="text-red-500 text-sm mt-1">
                                 {% for error in form.recipe.errors %}
                                     {{ error }}
                                 {% endfor %}
@@ -125,12 +334,15 @@
                         {% endif %}
                     </div>
                     
-                    <div class="d-flex justify-content-between">
-                        <a href="{{ url_for('dishes.index') }}" class="btn btn-secondary">取消</a>
-                        {{ form.save_button(class="btn btn-primary") }}
+                    <!-- 提交按钮 -->
+                    <div class="flex flex-col sm:flex-row justify-between gap-3 pt-2">
+                        <a href="{{ url_for('dishes.index') }}" class="order-2 sm:order-1 w-full sm:w-auto px-5 py-3 bg-gray-300 hover:bg-gray-400 text-gray-800 font-medium rounded-lg flex items-center justify-center transition duration-150 shadow-sm touch-btn">
+                            <i class="fas fa-arrow-left mr-2"></i> 取消
+                        </a>
+                        {{ form.save_button(class="order-1 sm:order-2 w-full sm:w-auto px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg flex items-center justify-center transition duration-150 shadow-sm touch-btn") }}
                     </div>
-                </form>
-            </div>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -167,6 +379,9 @@
         
         // 图片上传前压缩处理
         if (imageInput) {
+            const customFileUpload = document.querySelector('.custom-file-upload');
+            const imageInput = document.querySelector('#image');
+            
             imageInput.addEventListener('change', function(e) {
                 const file = e.target.files[0];
                 if (!file) return;
@@ -174,18 +389,61 @@
                 // 只处理图片文件
                 if (!file.type.match(/image.*/)) return;
                 
+                // 显示选中的文件名
+                const fileName = file.name;
+                const fileSize = (file.size / 1024).toFixed(1) + ' KB';
+                
+                // 添加预览
+                if (!customFileUpload.querySelector('.image-preview')) {
+                    const preview = document.createElement('div');
+                    preview.className = 'image-preview mt-2 p-2 bg-gray-100 rounded-lg';
+                    preview.innerHTML = `
+                        <div class="flex items-center justify-between mb-2">
+                            <p class="text-sm text-gray-600 truncate">${fileName} <span class="text-gray-500">(${fileSize})</span></p>
+                            <button type="button" class="text-red-500 hover:text-red-700" onclick="clearImagePreview()">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <div class="relative image-loading bg-gray-200 rounded-lg" style="min-height:150px;">
+                            <img id="preview-image" class="w-full max-h-48 object-contain rounded" style="opacity:0;transition:opacity 0.3s ease;">
+                        </div>
+                    `;
+                    customFileUpload.appendChild(preview);
+                    
+                    // 添加清除预览功能
+                    window.clearImagePreview = function() {
+                        imageInput.value = '';
+                        const preview = customFileUpload.querySelector('.image-preview');
+                        if (preview) preview.remove();
+                    };
+                } else {
+                    const previewFileName = customFileUpload.querySelector('.text-sm.text-gray-600');
+                    if (previewFileName) previewFileName.innerHTML = `${fileName} <span class="text-gray-500">(${fileSize})</span>`;
+                    // 重置图片为加载状态
+                    const previewImg = customFileUpload.querySelector('#preview-image');
+                    if (previewImg) previewImg.style.opacity = '0';
+                }
+                
                 // 如果图片小于1MB，不进行压缩
-                if (file.size < 1024 * 1024) return;
+                if (file.size < 1024 * 1024) {
+                    // 直接显示预览
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const img = customFileUpload.querySelector('#preview-image');
+                        if (img) {
+                            img.src = e.target.result;
+                            img.onload = function() { img.style.opacity = '1'; };
+                        }
+                    };
+                    reader.readAsDataURL(file);
+                    return;
+                }
                 
                 // 显示加载提示
-                const formGroup = imageInput.closest('.mb-3');
-                let loadingMsg = formGroup.querySelector('.compress-loading');
-                if (!loadingMsg) {
-                    loadingMsg = document.createElement('div');
-                    loadingMsg.className = 'compress-loading text-muted mt-2';
-                    loadingMsg.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> 正在压缩图片，请稍候...';
-                    formGroup.appendChild(loadingMsg);
-                }
+                const loadingMsg = document.createElement('div');
+                loadingMsg.className = 'text-center text-sm text-blue-600 mt-2 compress-loading';
+                loadingMsg.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> 正在压缩图片，请稍候...';
+                customFileUpload.appendChild(loadingMsg);
                 
                 // 压缩图片
                 compressImage(file).then(compressedFile => {
@@ -194,10 +452,21 @@
                     dataTransfer.items.add(compressedFile);
                     imageInput.files = dataTransfer.files;
                     
+                    // 更新压缩后的图片预览
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const img = customFileUpload.querySelector('#preview-image');
+                        if (img) {
+                            img.src = e.target.result;
+                            img.onload = function() { img.style.opacity = '1'; };
+                        }
+                    };
+                    reader.readAsDataURL(compressedFile);
+                    
                     // 更新提示
                     loadingMsg.innerHTML = `
-                        <span class="text-success"><i class="fas fa-check-circle mr-1"></i> 图片已压缩</span>
-                        <small class="ml-2">原始大小: ${Math.round(file.size / 1024)}KB, 压缩后: ${Math.round(compressedFile.size / 1024)}KB</small>
+                        <span class="text-green-600"><i class="fas fa-check-circle mr-1"></i> 图片已压缩</span>
+                        <small class="text-gray-500 block mt-1">原始大小: ${Math.round(file.size / 1024)}KB, 压缩后: ${Math.round(compressedFile.size / 1024)}KB</small>
                     `;
                     setTimeout(() => {
                         loadingMsg.style.opacity = '0';
@@ -222,6 +491,13 @@
                 ingredientsData.value = JSON.stringify(ingredients);
                 
                 console.log('表单数据已更新，正常提交...');
+                
+                // 提交按钮加载状态
+                const submitBtn = dishForm.querySelector('[type="submit"]');
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> 提交中...';
+                }
             } catch(error) {
                 console.error('表单处理时出错，但继续提交:', error);
             }
@@ -262,19 +538,17 @@
             
             ingredients.forEach((ingredient, index) => {
                 const ingredientItem = document.createElement('div');
-                ingredientItem.className = 'col-12 ingredient-item mb-2';
+                ingredientItem.className = 'ingredient-item bg-white rounded-lg shadow p-3 relative transition transform hover:shadow-md';
                 ingredientItem.innerHTML = `
-                    <div class="row g-2">
-                        <div class="col-6">
-                            <input type="text" class="form-control ingredient-name" placeholder="配料名称" value="${ingredient.name || ''}" data-index="${index}">
+                    <div class="sm:flex space-y-2 sm:space-y-0 sm:space-x-3 sm:items-center">
+                        <div class="flex-grow">
+                            <input type="text" class="w-full px-4 py-2 rounded-md border border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 ingredient-name" placeholder="配料名称" value="${ingredient.name || ''}" data-index="${index}">
                         </div>
-                        <div class="col-6">
-                            <div class="input-group">
-                                <input type="text" class="form-control ingredient-amount" placeholder="数量" value="${ingredient.amount || ''}" data-index="${index}">
-                                <button type="button" class="btn btn-outline-danger remove-ingredient" data-index="${index}">
-                                    <i class="fas fa-times"></i>
-                                </button>
-                            </div>
+                        <div class="flex-grow-0 flex items-center">
+                            <input type="text" class="w-full px-4 py-2 rounded-md border border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 ingredient-amount" placeholder="数量" value="${ingredient.amount || ''}" data-index="${index}">
+                            <button type="button" class="ml-2 bg-red-100 hover:bg-red-200 text-red-600 rounded-full w-8 h-8 flex items-center justify-center transition duration-150 remove-ingredient" data-index="${index}">
+                                <i class="fas fa-times"></i>
+                            </button>
                         </div>
                     </div>
                 `;
@@ -323,7 +597,7 @@
                         let width = img.width;
                         let height = img.height;
                         
-                        // 检测设备类型，在手机端进一步减小尺寸
+            // 检测设备类型，在手机端进一步减小尺寸
                         const isMobile = window.innerWidth < 768;
                         // 手机端最大尺寸降低为800px，电脑端保持1000px
                         const maxSize = isMobile ? 800 : 1000;
@@ -341,8 +615,10 @@
                         canvas.width = width;
                         canvas.height = height;
                         
-                        // 绘制图像
+                        // 绘制图像并应用锐化
                         const ctx = canvas.getContext('2d');
+                        ctx.imageSmoothingEnabled = true;
+                        ctx.imageSmoothingQuality = 'high';
                         ctx.drawImage(img, 0, 0, width, height);
                         
                         // 根据设备调整质量

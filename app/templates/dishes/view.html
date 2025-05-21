@@ -6,9 +6,12 @@
 
 {% block content %}
 <div class="bg-white rounded-lg shadow-md overflow-hidden mb-6">
-    <div class="p-4 border-b flex justify-between items-center">
-        <h1 class="text-2xl font-bold text-gray-800">{{ dish.name }}</h1>
-        <div class="flex space-x-2">
+    <!-- 标题和操作按钮 - 移动端优化 -->
+    <div class="p-3 sm:p-4 border-b flex flex-col sm:flex-row sm:justify-between sm:items-center">
+        <h1 class="text-xl sm:text-2xl font-bold text-gray-800 mb-3 sm:mb-0">{{ dish.name }}</h1>
+        
+        <!-- 桌面端按钮排列 -->
+        <div class="hidden sm:flex space-x-2">
             <a href="{{ url_for('dishes.index') }}" class="bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded shadow-sm flex items-center">
                 <i class="fas fa-arrow-left mr-2"></i> 返回
             </a>
@@ -19,36 +22,55 @@
                 <i class="fas fa-trash-alt mr-2"></i> 删除
             </button>
         </div>
+        
+        <!-- 移动端按钮排列 -->
+        <div class="flex sm:hidden space-x-2">
+            <a href="{{ url_for('dishes.index') }}" class="flex-1 bg-gray-500 hover:bg-gray-600 text-white py-2 px-3 rounded shadow-sm flex items-center justify-center">
+                <i class="fas fa-arrow-left mr-2"></i> 返回
+            </a>
+            <a href="{{ url_for('dishes.edit', id=dish.id) }}" class="flex-1 bg-yellow-500 hover:bg-yellow-600 text-white py-2 px-3 rounded shadow-sm flex items-center justify-center">
+                <i class="fas fa-edit mr-2"></i> 编辑
+            </a>
+            <button type="button" class="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 px-3 rounded shadow-sm flex items-center justify-center" onclick="openDeleteDialog('{{ dish.id }}')">
+                <i class="fas fa-trash-alt mr-2"></i> 删除
+            </button>
+        </div>
     </div>
 
-    <div class="p-4">
+    <div class="p-3 sm:p-4">
         <div class="flex flex-col md:flex-row">
+            <!-- 图片区域 - 移动端优化 -->
             <div class="w-full md:w-1/3 mb-4 md:mb-0 md:mr-6">
                 {% if dish.image_path %}
-                    <div class="bg-gray-100 rounded overflow-hidden" style="min-height: 300px;">
+                    <div class="bg-gray-100 rounded overflow-hidden" style="min-height: 200px; max-height: 300px;">
                         <img 
-                            src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'%3E%3C/svg%3E" 
-                            data-src="{{ url_for('static', filename=dish.image_path) }}" 
-                            class="lazy-image w-full h-full object-cover" 
-                            alt="{{ dish.name }}" 
-                            style="transition: opacity 0.3s ease-in-out; opacity: 0;">
+                            src="{{ url_for('static', filename=dish.image_path) }}" 
+                            class="w-full h-full object-cover" 
+                            alt="{{ dish.name }}"
+                            onerror="this.onerror=null; this.parentNode.innerHTML='<div class=\'w-full h-full flex items-center justify-center\'><i class=\'fas fa-utensils text-gray-400 text-5xl\'></i></div>';">
                     </div>
                 {% else %}
-                    <div class="bg-gray-100 flex justify-center items-center rounded" style="min-height: 300px;">
+                    <div class="bg-gray-100 flex justify-center items-center rounded" style="min-height: 200px;">
                         <i class="fas fa-utensils text-gray-400 text-5xl"></i>
                     </div>
                 {% endif %}
             </div>
+            
+            <!-- 内容区域 - 移动端优化 -->
             <div class="w-full md:w-2/3">
+                <!-- 分类标签 -->
                 <div class="mb-2">
-                    <span class="inline-block px-2 py-1 bg-gray-200 text-gray-800 rounded-full">{{ dish.category.name }}</span>
+                    <a href="{{ url_for('categories.view', id=dish.category.id) }}" class="inline-block px-3 py-1 bg-blue-100 text-blue-800 rounded-full hover:bg-blue-200 transition">
+                        <i class="fas fa-th-list mr-1"></i> {{ dish.category.name }}
+                    </a>
                 </div>
 
-                <h2 class="text-xl font-semibold text-gray-800 mt-4 mb-2">配料：</h2>
+                <!-- 配料列表 -->
+                <h2 class="text-lg sm:text-xl font-semibold text-gray-800 mt-4 mb-2">配料：</h2>
                 {% if dish.ingredients %}
                     <div class="bg-white border border-gray-200 rounded-lg mb-4">
                         {% for ingredient in dish.ingredients %}
-                            <div class="p-3 border-b last:border-b-0 flex justify-between items-center">
+                            <div class="p-2 sm:p-3 border-b last:border-b-0 flex justify-between items-center">
                                 <span class="text-gray-800">{{ ingredient.name }}</span>
                                 <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm">{{ ingredient.amount }}</span>
                             </div>
@@ -58,9 +80,10 @@
                     <p class="text-gray-500 italic mb-4">暂无配料信息</p>
                 {% endif %}
 
-                <h2 class="text-xl font-semibold text-gray-800 mb-2">烹饪方法：</h2>
-                <div class="p-4 bg-gray-50 rounded-lg whitespace-pre-line">
-                    {{ dish.recipe|nl2br|safe }}
+                <!-- 烹饪方法 -->
+                <h2 class="text-lg sm:text-xl font-semibold text-gray-800 mb-2">烹饪方法：</h2>
+                <div class="p-3 sm:p-4 bg-gray-50 rounded-lg whitespace-pre-line text-sm sm:text-base">
+                    {{ dish.recipe|nl2br|safe or '暂无烹饪方法说明' }}
                 </div>
             </div>
         </div>
@@ -100,43 +123,19 @@
         document.body.style.overflow = '';
     }
     
-    // 图片懒加载
+    // 检查图片加载错误
     document.addEventListener('DOMContentLoaded', function() {
-        if ('IntersectionObserver' in window) {
-            const lazyImages = document.querySelectorAll('.lazy-image');
-            
-            const imageObserver = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        const image = entry.target;
-                        
-                        // 开始加载图片
-                        const tempImage = new Image();
-                        tempImage.onload = function() {
-                            image.src = image.dataset.src;
-                            image.style.opacity = '1';
-                            
-                            // 一旦加载完成，不再需要观察
-                            imageObserver.unobserve(image);
-                        };
-                        tempImage.src = image.dataset.src;
-                    }
-                });
-            }, {
-                rootMargin: '200px 0px',
-                threshold: 0.01
+        // 延迟检查图片
+        setTimeout(function() {
+            const images = document.querySelectorAll('img[onerror]');
+            images.forEach(img => {
+                if (!img.complete || img.naturalHeight === 0) {
+                    // 触发onerror处理程序
+                    const event = new Event('error');
+                    img.dispatchEvent(event);
+                }
             });
-            
-            lazyImages.forEach(image => {
-                imageObserver.observe(image);
-            });
-        } else {
-            // 回退方案：如果不支持IntersectionObserver，直接加载所有图片
-            document.querySelectorAll('.lazy-image').forEach(image => {
-                image.src = image.dataset.src;
-                image.style.opacity = '1';
-            });
-        }
+        }, 2000);
     });
 </script>
 {% endblock %}

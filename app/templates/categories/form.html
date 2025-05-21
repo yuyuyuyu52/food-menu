@@ -5,35 +5,54 @@
 {% block header_title %}{% if category is defined %}编辑分类{% else %}新建分类{% endif %}{% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-8 mx-auto">
-        <div class="card">
-            <div class="card-header bg-primary text-white">
-                <h2 class="card-title mb-0">{{ title }}</h2>
-            </div>
-            <div class="card-body">
-                <form method="post" novalidate>
-                    {{ form.csrf_token }}
-                    
-                    <div class="mb-3">
-                        {{ form.name.label(class="form-label") }}
-                        {{ form.name(class="form-control" + (" is-invalid" if form.name.errors else "")) }}
-                        {% if form.name.errors %}
-                            <div class="invalid-feedback">
-                                {% for error in form.name.errors %}
-                                    {{ error }}
-                                {% endfor %}
-                            </div>
-                        {% endif %}
-                    </div>
-                    
-                    <div class="d-flex justify-content-between">
-                        <a href="{{ url_for('categories.index') }}" class="btn btn-secondary">取消</a>
-                        {{ form.save_button(class="btn btn-primary") }}
-                    </div>
-                </form>
-            </div>
+<div class="w-full max-w-lg mx-auto">
+    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+        <div class="bg-blue-600 text-white p-4">
+            <h2 class="text-xl font-semibold">{{ title }}</h2>
+        </div>
+        <div class="p-4">
+            <form method="post" novalidate>
+                {{ form.csrf_token }}
+                
+                <div class="mb-4">
+                    {{ form.name.label(class="block text-gray-700 text-sm font-semibold mb-2") }}
+                    {{ form.name(class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" + (" border-red-500" if form.name.errors else " border-gray-300")) }}
+                    {% if form.name.errors %}
+                        <div class="text-red-500 text-sm mt-1">
+                            {% for error in form.name.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="flex justify-between mt-6">
+                    <a href="{{ url_for('categories.index') }}" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition duration-150 flex items-center">
+                        <i class="fas fa-arrow-left mr-2"></i> 取消
+                    </a>
+                    {{ form.save_button(class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition duration-150 flex items-center") }}
+                </div>
+            </form>
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // 在DOM加载后为按钮添加图标
+    document.addEventListener('DOMContentLoaded', function() {
+        const saveButton = document.querySelector('input[type="submit"]');
+        if (saveButton) {
+            // 创建新按钮替换原始的input按钮
+            const newButton = document.createElement('button');
+            newButton.type = 'submit';
+            newButton.className = saveButton.className;
+            newButton.innerHTML = '<i class="fas fa-save mr-2"></i> ' + saveButton.value;
+            
+            // 替换按钮
+            saveButton.parentNode.replaceChild(newButton, saveButton);
+        }
+    });
+</script>
 {% endblock %}
